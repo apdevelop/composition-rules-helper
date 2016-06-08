@@ -1,0 +1,107 @@
+﻿<Window x:Class="ScreenGrid.Views.ScreenGridWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Screen Grid" 
+        Left="{Binding WindowLeft, Mode=TwoWay}"
+        Top="{Binding WindowTop, Mode=TwoWay}"
+        Width="{Binding WindowWidth, Mode=TwoWay}"
+        Height="{Binding WindowHeight, Mode=TwoWay}"
+        Topmost="True"
+        WindowStyle="None"
+        ResizeMode="CanResizeWithGrip"
+        AllowsTransparency="True"
+        MinWidth="150"
+        MinHeight="50"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent" 
+        Loaded="Window_Loaded" 
+        Closing="Window_Closing">
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ScreenGrid.Views;component/Assets/PathData.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="22" />
+            <RowDefinition Height="2" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.Resources>
+            <Style TargetType="Button">
+                <Setter Property="Width" Value="20" />
+                <Setter Property="VerticalAlignment" Value="Stretch" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Margin" Value="1,1,1,1" />
+            </Style>
+            <Style TargetType="ContentControl">
+                <Setter Property="IsTabStop" Value="False" />
+            </Style>
+            <Style TargetType="Path">
+                <Setter Property="Stretch" Value="Uniform" />
+                <Setter Property="Stroke" Value="Black" />
+                <Setter Property="Fill" Value="Black" />
+            </Style>
+        </Grid.Resources>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Button Name="btnMenu" Click="btnMenu_Click">
+                <ContentControl>
+                    <Path Data="{Binding Source={StaticResource pathDataRow}}" />
+                </ContentControl>                
+            </Button>
+            <Button Command="{Binding SnapCommand}">
+                <ContentControl>
+                    <Path Data="{Binding Source={StaticResource pathDataSelection}}" />
+                </ContentControl>
+            </Button>
+            <Button Content="&lt;" 
+                    Command="{Binding RotateCCWcommand}" />
+            <Button Content="&gt;" 
+                    Command="{Binding RotateCWcommand}" />
+            <Button Command="{Binding FlipVerticalCommand}">
+                <ContentControl>
+                    <Path Data="{Binding Source={StaticResource pathDataZoomVertical02}}" />
+                </ContentControl>
+            </Button>
+            <Button Command="{Binding FlipHorizontalCommand}">
+                <ContentControl>
+                    <Path Data="{Binding Source={StaticResource pathDataZoomHorizontal02}}" />
+                </ContentControl>
+            </Button>
+            <Grid Width="200" HorizontalAlignment="Stretch" >
+                <Rectangle Stroke="DarkGray" Fill="LightGray" 
+                           Width="200" 
+                           HorizontalAlignment="Stretch" 
+                           MouseDown="Window_MouseDown" />
+                <TextBlock VerticalAlignment="Center" Margin="8,0,0,0" IsHitTestVisible="False" 
+                           Text="{Binding CaptionText}" />
+            </Grid>
+            <Button Name="btnMinimize" Click="btnMinimize_Click">
+                <ContentControl IsTabStop="False">
+                    <Path Margin="0,10,0,0"
+                          Data="{Binding Source={StaticResource pathDataMinus}}" />
+                </ContentControl>
+            </Button>
+            <Button Name="btnClose" Click="btnClose_Click">
+                <ContentControl IsTabStop="False">
+                    <Path Data="{Binding Source={StaticResource pathDataClose}}" />
+                </ContentControl>
+            </Button>
+        </StackPanel>
+
+        <Rectangle Grid.Row="2" 
+                   IsHitTestVisible="False"
+                   Stroke="#7F30E030" SnapsToDevicePixels="True" />
+        <ContentControl Grid.Row="2" 
+                        IsHitTestVisible="False"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                        Content="{Binding ContentControl}" />
+
+    </Grid>
+</Window>
