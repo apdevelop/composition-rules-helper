@@ -1,9 +1,9 @@
 ﻿namespace ScreenGrid.Views
 {
-    using System;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
+    using System.Windows.Media;
 
     public partial class ScreenGridWindow : Window
     {
@@ -23,6 +23,11 @@
 
         public ScreenGridWindow()
         {
+            // TODO: check in high DPI modes
+
+            // Making text sharp
+            TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+
             // TODO: external ViewModel
             this.InitializeComponent();
             this.vm = new ViewModels.ScreenGridViewModel();

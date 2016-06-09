@@ -50,26 +50,41 @@
         </Grid.Resources>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <Button Name="btnMenu" Click="btnMenu_Click">
+            <Button Name="btnMenu" Click="btnMenu_Click"
+                    ToolTip="Select grid type">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataRow}}" />
                 </ContentControl>                
             </Button>
-            <Button Command="{Binding SnapCommand}">
+            <Button ToolTip="Snap to image borders in topmost window"
+                    Command="{Binding SnapCommand}">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataSelection}}" />
                 </ContentControl>
             </Button>
-            <Button Content="&lt;" 
-                    Command="{Binding RotateCCWcommand}" />
-            <Button Content="&gt;" 
-                    Command="{Binding RotateCWcommand}" />
-            <Button Command="{Binding FlipVerticalCommand}">
+            <Button ToolTip="Rotate grid counter clockwise"
+                    Command="{Binding RotateCounterClockwiseCommand}">
+                <ContentControl>
+                    <Path Data="{Binding Source={StaticResource pathDataRotate01}}" />
+                </ContentControl>                
+            </Button>
+            <Button ToolTip="Rotate grid clockwise"
+                    Command="{Binding RotateClockwiseCommand}">
+                <ContentControl>
+                    <Path Data="{Binding Source={StaticResource pathDataRotate01}}" />
+                    <ContentControl.LayoutTransform>
+                        <ScaleTransform ScaleX="-1"/>
+                    </ContentControl.LayoutTransform>
+                </ContentControl>
+            </Button>
+            <Button ToolTip="Flip grid vertical"
+                    Command="{Binding FlipVerticalCommand}">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataZoomVertical02}}" />
                 </ContentControl>
             </Button>
-            <Button Command="{Binding FlipHorizontalCommand}">
+            <Button ToolTip="Flip grid horizontal"
+                    Command="{Binding FlipHorizontalCommand}">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataZoomHorizontal02}}" />
                 </ContentControl>
@@ -79,16 +94,20 @@
                            Width="200" 
                            HorizontalAlignment="Stretch" 
                            MouseDown="Window_MouseDown" />
-                <TextBlock VerticalAlignment="Center" Margin="8,0,0,0" IsHitTestVisible="False" 
+                <TextBlock VerticalAlignment="Center" Margin="8,0,0,0" 
+                           IsHitTestVisible="False" 
+                           ToolTip="Size of grid internal area"
                            Text="{Binding CaptionText}" />
             </Grid>
-            <Button Name="btnMinimize" Click="btnMinimize_Click">
+            <Button Name="btnMinimize" Click="btnMinimize_Click"
+                    ToolTip="Minimize">
                 <ContentControl IsTabStop="False">
                     <Path Margin="0,10,0,0"
                           Data="{Binding Source={StaticResource pathDataMinus}}" />
                 </ContentControl>
             </Button>
-            <Button Name="btnClose" Click="btnClose_Click">
+            <Button Name="btnClose" Click="btnClose_Click"
+                    ToolTip="Close">
                 <ContentControl IsTabStop="False">
                     <Path Data="{Binding Source={StaticResource pathDataClose}}" />
                 </ContentControl>

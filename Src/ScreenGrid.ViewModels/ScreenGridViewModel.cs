@@ -26,15 +26,15 @@
                 HorizontalAlignment = HorizontalAlignment.Stretch,
             };
 
-            this.RotateCWCommand = new RelayCommand((o) => { this.Rot = Rotator.RotateClockwise(this.Rot); });
-            this.RotateCCWCommand = new RelayCommand((o) => { this.Rot = Rotator.RotateCounterClockwise(this.Rot); });
+            this.RotateClockwiseCommand = new RelayCommand((o) => { this.Rot = Rotator.RotateClockwise(this.Rot); });
+            this.RotateCounterClockwiseCommand = new RelayCommand((o) => { this.Rot = Rotator.RotateCounterClockwise(this.Rot); });
             this.FlipHorizontalCommand = new RelayCommand((o) => { this.FlipH = !this.FlipH; });
             this.FlipVerticalCommand = new RelayCommand((o) => { this.FlipV = !this.FlipV; });
             this.SnapCommand = new RelayCommand((o) => { this.SnapToRenderView(); });
         }
 
-        public ICommand RotateCWCommand { get; private set; }
-        public ICommand RotateCCWCommand { get; private set; }
+        public ICommand RotateClockwiseCommand { get; private set; }
+        public ICommand RotateCounterClockwiseCommand { get; private set; }
         public ICommand FlipHorizontalCommand { get; private set; }
         public ICommand FlipVerticalCommand { get; private set; }
         public ICommand SnapCommand { get; private set; }
