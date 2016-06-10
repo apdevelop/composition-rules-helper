@@ -7,6 +7,7 @@
     /// </summary>
     public class FlatImage
     {
+        // TODO: ? use single-dimension array ?
         public UInt32[,] pixels;
 
         public int Width
@@ -40,6 +41,17 @@
                 ((double)Math.Abs(rgb1[2] - rgb2[2])) +
                 ((double)Math.Abs(rgb1[3] - rgb2[3]))
                 ) / 4.0);
+        }
+
+        public UInt32[] GetHorizontalStripe(int iy)
+        {
+            var result = new UInt32[this.Width];
+            for (var ix = 0; ix < this.Width; ix++)
+            {
+                result[ix] = this.pixels[ix, iy];
+            }
+
+            return result;
         }
 
         public bool CompareWithFragment(FlatImage fragment, int startX, int startY)
@@ -78,7 +90,7 @@
         {
             if (bitmap.PixelFormat != System.Drawing.Imaging.PixelFormat.Format24bppRgb)
             {
-                throw new FormatException(String.Format("Image format {0} not supported", bitmap.PixelFormat));
+                throw new FormatException(String.Format("Image format '{0}' is not supported", bitmap.PixelFormat));
             }
 
             int pixelSize = 3;
