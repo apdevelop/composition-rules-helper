@@ -1,6 +1,7 @@
 ﻿namespace ScreenGrid.Models
 {
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// 'Flattened' image representation for fast processing
@@ -52,6 +53,75 @@
             }
 
             return result;
+        }
+
+        public static UInt32[] GetDerivative(UInt32[] stripe)
+        {
+            var result = new UInt32[stripe.Length];
+
+            result[0] = stripe[0];
+            for (var i = 1; i < stripe.Length; i++)
+            {
+                result[i] = stripe[i] - stripe[i - 1];
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Search for all-zero segments of array with given minimal length
+        /// </summary>
+        /// <param name="array">Input array</param>
+        /// <param name="minimalSegmentLength">Minimal length of segment</param>
+        /// <returns>List of segments (startIndex, endIndex) which contains only zeros</returns>
+        public static IList<Tuple<int, int>> FindZeroSegments(UInt32[] array, int minimalSegmentLength)
+        {
+            var result = new List<Tuple<int, int>>();
+
+            if (array.Length < minimalSegmentLength)
+            {
+                return result;
+            }
+
+            int lastZero = -1;
+            for (var i = 0; i < array.Length; i++)
+            {
+                if (array[i] == 0)
+                {
+                    if (lastZero == -1)
+                    {
+                        lastZero = i;
+                    }
+
+                    if (i == (array.Length - 1))
+                    {
+                        var segment = new Tuple<int, int>(lastZero, i);
+                        if (CheckSegmentLength(segment, minimalSegmentLength))
+                        {
+                            result.Add(segment);
+                        }
+                    }
+                }
+                else
+                {
+                    if (lastZero != -1)
+                    {
+                        var segment = new Tuple<int, int>(lastZero, i - 1);
+                        lastZero = -1;
+                        if (CheckSegmentLength(segment, minimalSegmentLength))
+                        {
+                            result.Add(segment);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private static bool CheckSegmentLength(Tuple<int, int> segment, int minimalSegmentLength)
+        {
+            return ((segment.Item2 - segment.Item1 + 1) >= minimalSegmentLength);
         }
 
         public bool CompareWithFragment(FlatImage fragment, int startX, int startY)
