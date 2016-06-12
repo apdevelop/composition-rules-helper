@@ -253,14 +253,14 @@
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture, 
-                    "{0}\u00D7{1}", 
+                return String.Format(CultureInfo.InvariantCulture,
+                    "{0}\u00D7{1}",
                     (int)(this.WindowWidth - 2 * OuterBorderWidth),
                     (int)(this.WindowHeight - 2 * OuterBorderWidth - HeaderHeight));
             }
         }
 
-        public void SnapToRenderView()
+        private IList<string> GetWindowClassNames()
         {
             var classNames = new List<string>();
 
@@ -269,53 +269,58 @@
             var orw = Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses();
             classNames.AddRange(orw.Select(w => w.ClassName));
 
+            classNames.Add("MozillaWindowClass"); // TODO: do not use window class names, check any applications with topmost windows
+
+            return classNames;
+        }
+
+        public void SnapToRenderView()
+        {
             // select foreground window from several processes of supported applications
-            var window = Models.AppsInterop.NativeWindow.GetTopMostWindow(classNames);
+            var nativeWindow = Models.AppsInterop.NativeWindow.GetTopMostWindow(this.GetWindowClassNames());
 
-            if (window != null)
+            if (nativeWindow != null)
             {
-                switch (window.ClassName)
+                if (nativeWindow.ClassName == Models.AppsInterop.PhotoViewerWindow.MainWindowClassName)
                 {
-                    case Models.AppsInterop.PhotoViewerWindow.MainWindowClassName:
+                    var photoViewerWindow = new Models.AppsInterop.PhotoViewerWindow(nativeWindow.Handle);
+
+                    var rectViewedImage = photoViewerWindow.PhotoCanvasRect();
+                    if (!rectViewedImage.IsEmpty)
+                    {
+                        this.PositionWindow(Models.Geometry.Point.Zero, rectViewedImage);
+                    }
+                }
+                else
+                {
+                    Task.Factory.StartNew<Tuple<Models.Geometry.Rectangle, Models.Geometry.Point>>(() =>
+                    {
+                        var bitmap = nativeWindow.GetShot();
+                        var flatImage = new Models.FlatImage(bitmap);
+
+                        Models.Geometry.Rectangle rectRenderedImage;
+                        if (Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses().Any(w => w.ClassName == nativeWindow.ClassName))
                         {
-                            var photoViewerWindow = new Models.AppsInterop.PhotoViewerWindow(window.Handle);
-
-                            var rectViewedImage = photoViewerWindow.PhotoCanvasRect();
-                            if (!rectViewedImage.IsEmpty)
-                            {
-                                this.PositionWindow(Models.Geometry.Point.Zero, rectViewedImage);
-                            }
-
-                            break;
+                            // TODO: remove this Octane Render specific code
+                            rectRenderedImage = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
                         }
-                    default: // TODO: check is Octane Render!
-                        //case Models.AppInterop.OctaneRender.OctaneRenderWindow.MainWindowClassName:
+                        else
                         {
-                            Task.Factory.StartNew<Tuple<Models.Geometry.Rectangle, Models.Geometry.Point>>(() =>
-                            {
-                                var octaneWindow = new Models.AppsInterop.OctaneRenderWindow(window.Handle);
-                                var bitmap = octaneWindow.GetShot();
-                                var flatImage = new Models.FlatImage(bitmap);
-                                var rectRenderedImage = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
-                                var octaneWindowLocation = new Models.Geometry.Point(octaneWindow.Location.X, octaneWindow.Location.Y);
-                                return new Tuple<Models.Geometry.Rectangle, Models.Geometry.Point>(rectRenderedImage, octaneWindowLocation);
-                            }).ContinueWith((t) =>
-                            {
-                                var rectRenderedImage = t.Result.Item1;
-                                var octaneWindowLocation = t.Result.Item2;
-                                if (!rectRenderedImage.IsEmpty)
-                                {
-                                    this.PositionWindow(t.Result.Item2, t.Result.Item1);
-                                }
-                            },
-                            TaskScheduler.FromCurrentSynchronizationContext());
-
-                            break;
+                            rectRenderedImage = flatImage.FindBoundingsOfInnerImage();
                         }
-                    //default:
-                    //{
-                    //    throw new NotSupportedException(window.ClassName);
-                    //}
+
+                        var nativeWindowLocation = new Models.Geometry.Point(nativeWindow.Location.X, nativeWindow.Location.Y);
+                        return new Tuple<Models.Geometry.Rectangle, Models.Geometry.Point>(rectRenderedImage, nativeWindowLocation);
+                    }).ContinueWith((t) =>
+                    {
+                        var rectRenderedImage = t.Result.Item1;
+                        var windowLocation = t.Result.Item2;
+                        if (!rectRenderedImage.IsEmpty)
+                        {
+                            this.PositionWindow(t.Result.Item2, t.Result.Item1);
+                        }
+                    },
+                    TaskScheduler.FromCurrentSynchronizationContext());
                 }
             }
         }
@@ -323,7 +328,7 @@
         private void PositionWindow(Models.Geometry.Point parentLocation, Models.Geometry.Rectangle rectRenderedImage)
         {
             var diffX = 0.0;
-            var diffY = HeaderHeight; 
+            var diffY = HeaderHeight;
             // TODO: remove magiс numbers
             this.WindowLeft = rectRenderedImage.Left + parentLocation.X - diffX - 1;
             this.WindowTop = rectRenderedImage.Top + parentLocation.Y - diffY - 1;

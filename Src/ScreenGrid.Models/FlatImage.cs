@@ -55,6 +55,17 @@
             return result;
         }
 
+        public UInt32[] GetVerticalStripe(int ix)
+        {
+            var result = new UInt32[this.Height];
+            for (var iy = 0; iy < this.Height; iy++)
+            {
+                result[iy] = this.pixels[ix, iy];
+            }
+
+            return result;
+        }
+
         // TODO: move to separate class
 
         public static UInt32[] GetDerivative(UInt32[] stripe)
@@ -176,6 +187,51 @@
             return sum;
         }
 
+        public static Tuple<int, int> SegmentsWithMaxDistance(IList<Tuple<int, int>> segments)
+        {
+            if (segments.Count < 2)
+            {
+                throw new ArgumentException();
+            }
+
+            var i1 = 0;
+            var i2 = 0;
+            var maxDistance = 0;
+            for (var i = 0; i < segments.Count - 1; i++)
+            {
+                var distance = segments[i + 1].Item1 - segments[i].Item2;
+                if (distance > maxDistance)
+                {
+                    i1 = segments[i].Item2;
+                    i2 = segments[i + 1].Item1;
+                    maxDistance = distance;
+                }
+            }
+
+            return new Tuple<int, int>(i1, i2);
+        }
+
+        public Models.Geometry.Rectangle FindBoundingsOfInnerImage()
+        {
+            // TODO: add tests for this method
+            const int minimalSegmentLength = 8;
+
+            // TODO: Very simple method, need to perform more checks and do more searches
+            var stripeCH = FlatImage.FindZeroSegments(FlatImage.GetDerivative(this.GetHorizontalStripe(this.Height / 2)), minimalSegmentLength);
+            var stripeCV = FlatImage.FindZeroSegments(FlatImage.GetDerivative(this.GetVerticalStripe(this.Width / 2)), minimalSegmentLength);
+
+            var maxH = FlatImage.SegmentsWithMaxDistance(stripeCH);
+            var maxV = FlatImage.SegmentsWithMaxDistance(stripeCV);
+
+            return new Geometry.Rectangle
+            {
+                X = maxH.Item1 + 1,
+                Y = maxV.Item1 + 1,
+                Width = maxH.Item2 - maxH.Item1 - 2,
+                Height = maxV.Item2 - maxV.Item1 - 2,
+            };
+        }
+
         public bool CompareWithFragment(FlatImage fragment, int startX, int startY)
         {
             for (var x = 0; x < fragment.Width; x++)
@@ -237,6 +293,31 @@
             bitmap.UnlockBits(bitmapData);
 
             return res;
+        }
+
+        public unsafe System.Drawing.Bitmap ToBitmap()
+        {
+            var bitmap = new System.Drawing.Bitmap(this.Width, this.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb); 
+
+            const int pixelSize = 3;
+            var rect = new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            var bitmapData = bitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.WriteOnly, bitmap.PixelFormat);
+
+            for (var y = 0; y < bitmapData.Height; y++)
+            {
+                var row = (byte*)bitmapData.Scan0 + (y * bitmapData.Stride);
+                for (var x = 0; x < bitmapData.Width; x++)
+                {
+                    var pix = BitConverter.GetBytes(this.pixels[x, y]);
+                    row[x * pixelSize + 0] = pix[1];
+                    row[x * pixelSize + 1] = pix[2];
+                    row[x * pixelSize + 2] = pix[3];
+                }
+            }
+
+            bitmap.UnlockBits(bitmapData);
+
+            return bitmap;
         }
     }
 }
