@@ -161,7 +161,7 @@
                     sum.AddRange(line);
                 }
                 else
-                { 
+                {
                     // Perform intersection checks
                     var newSum = new List<Tuple<int, int>>();
                     foreach (var segmentA in sum)
@@ -211,25 +211,60 @@
             return new Tuple<int, int>(i1, i2);
         }
 
+        private IList<Tuple<int, int>> FindHorizontalZeroSegments(int iy, int minimalSegmentLength)
+        {
+            return FlatImage.FindZeroSegments(FlatImage.GetDerivative(this.GetHorizontalStripe(iy)), minimalSegmentLength);
+        }
+
+        private IList<Tuple<int, int>> FindVerticalZeroSegments(int ix, int minimalSegmentLength)
+        {
+            return FlatImage.FindZeroSegments(FlatImage.GetDerivative(this.GetVerticalStripe(ix)), minimalSegmentLength);
+        }
+
         public Models.Geometry.Rectangle FindBoundingsOfInnerImage()
         {
             // TODO: add tests for this method
             const int minimalSegmentLength = 8;
 
-            // TODO: Very simple method, need to perform more checks and do more searches
             var stripeCH = FlatImage.FindZeroSegments(FlatImage.GetDerivative(this.GetHorizontalStripe(this.Height / 2)), minimalSegmentLength);
             var stripeCV = FlatImage.FindZeroSegments(FlatImage.GetDerivative(this.GetVerticalStripe(this.Width / 2)), minimalSegmentLength);
 
-            var maxH = FlatImage.SegmentsWithMaxDistance(stripeCH);
-            var maxV = FlatImage.SegmentsWithMaxDistance(stripeCV);
-
-            return new Geometry.Rectangle
+            // TODO: optimize code
+            for (var iy = 1 * this.Height / 4; iy < 3 * this.Height / 4; iy += minimalSegmentLength)
             {
-                X = maxH.Item1 + 1,
-                Y = maxV.Item1 + 1,
-                Width = maxH.Item2 - maxH.Item1 - 2,
-                Height = maxV.Item2 - maxV.Item1 - 2,
-            };
+                stripeCH = FlatImage.IntersectionOfSegments(new[]
+                    { 
+                        stripeCH, 
+                        FindHorizontalZeroSegments(iy, minimalSegmentLength)
+                    });
+            }
+
+            for (var ix = 1 * this.Width / 4; ix < 3 * this.Width / 4; ix += minimalSegmentLength)
+            {
+                stripeCV = FlatImage.IntersectionOfSegments(new[]
+                    { 
+                        stripeCV, 
+                        FindVerticalZeroSegments(ix, minimalSegmentLength)
+                    });
+            }
+
+            if ((stripeCH.Count > 1) && (stripeCV.Count > 1))
+            {
+                var maxH = FlatImage.SegmentsWithMaxDistance(stripeCH);
+                var maxV = FlatImage.SegmentsWithMaxDistance(stripeCV);
+
+                return new Geometry.Rectangle
+                {
+                    X = maxH.Item1 + 1,
+                    Y = maxV.Item1 + 1,
+                    Width = maxH.Item2 - maxH.Item1 - 2,
+                    Height = maxV.Item2 - maxV.Item1 - 2,
+                };
+            }
+            else
+            {
+                return new Geometry.Rectangle();
+            }
         }
 
         public bool CompareWithFragment(FlatImage fragment, int startX, int startY)
@@ -297,7 +332,7 @@
 
         public unsafe System.Drawing.Bitmap ToBitmap()
         {
-            var bitmap = new System.Drawing.Bitmap(this.Width, this.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb); 
+            var bitmap = new System.Drawing.Bitmap(this.Width, this.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
             const int pixelSize = 3;
             var rect = new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height);

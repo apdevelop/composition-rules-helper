@@ -41,7 +41,6 @@
             Assert.Greater(dMiddle[12], 0);
         }
 
-
         [Test]
         public void FindBordersTest()
         {
@@ -59,6 +58,19 @@
 
                 Assert.AreEqual(2, segments.Count, String.Format("iy={0}", iy));
             }
+        }
+
+        [Test]
+        public void FindBoundingsOfInnerImage()
+        {
+            var flatImage = LoadFlatImageFromResource("ScreenGrid.Models.Tests.Resources.ImageSimple.png");
+
+            var result = flatImage.FindBoundingsOfInnerImage();
+
+            Assert.AreEqual(12, result.X);
+            Assert.AreEqual(10, result.Y);
+            Assert.AreEqual(40, result.Width);
+            Assert.AreEqual(28, result.Height);
         }
 
         [Test]

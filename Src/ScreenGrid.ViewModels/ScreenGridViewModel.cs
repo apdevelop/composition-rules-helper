@@ -298,26 +298,29 @@
                         var bitmap = nativeWindow.GetShot();
                         var flatImage = new Models.FlatImage(bitmap);
 
-                        Models.Geometry.Rectangle rectRenderedImage;
+                        Models.Geometry.Rectangle imageBoundings;
                         if (Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses().Any(w => w.ClassName == nativeWindow.ClassName))
                         {
                             // TODO: remove this Octane Render specific code
-                            rectRenderedImage = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
+                            imageBoundings = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
                         }
                         else
                         {
-                            rectRenderedImage = flatImage.FindBoundingsOfInnerImage();
+                            imageBoundings = flatImage.FindBoundingsOfInnerImage();
                         }
 
                         var nativeWindowLocation = new Models.Geometry.Point(nativeWindow.Location.X, nativeWindow.Location.Y);
-                        return new Tuple<Models.Geometry.Rectangle, Models.Geometry.Point>(rectRenderedImage, nativeWindowLocation);
+                        return new Tuple<Models.Geometry.Rectangle, Models.Geometry.Point>(imageBoundings, nativeWindowLocation);
                     }).ContinueWith((t) =>
                     {
-                        var rectRenderedImage = t.Result.Item1;
+                        var imageBoundings = t.Result.Item1;
                         var windowLocation = t.Result.Item2;
-                        if (!rectRenderedImage.IsEmpty)
+                        if (!imageBoundings.IsEmpty)
                         {
-                            this.PositionWindow(t.Result.Item2, t.Result.Item1);
+                            if ((imageBoundings.Width > 150) && (imageBoundings.Height > 50))
+                            {
+                                this.PositionWindow(t.Result.Item2, t.Result.Item1);
+                            }
                         }
                     },
                     TaskScheduler.FromCurrentSynchronizationContext());
