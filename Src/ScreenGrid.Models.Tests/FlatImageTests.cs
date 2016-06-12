@@ -133,6 +133,48 @@
             Assert.AreEqual(4, result[0].Item2);
         }
 
+        [Test]
+        public void IntersectionOfSegmentsFullIntersection()
+        {
+            var result = FlatImage.IntersectionOfSegments(
+                new Tuple<int, int>(1, 2),
+                new Tuple<int, int>(1, 2));
+            Assert.AreEqual(new Tuple<int, int>(1, 2), result);
+        }
+
+        [Test]
+        public void IntersectionOfSegmentsPartialIntersection()
+        {
+            var a = new Tuple<int, int>(1, 4);
+            var b = new Tuple<int, int>(2, 8);
+
+            Assert.AreEqual(new Tuple<int, int>(2, 4), FlatImage.IntersectionOfSegments(a, b));
+            Assert.AreEqual(new Tuple<int, int>(2, 4), FlatImage.IntersectionOfSegments(b, a));
+        }
+
+        [Test]
+        public void IntersectionOfSegmentsNoIntersection()
+        {
+            var result = FlatImage.IntersectionOfSegments(
+                new Tuple<int, int>(1, 2),
+                new Tuple<int, int>(4, 5));
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void IntersectionOfSegments()
+        {
+            var result = FlatImage.IntersectionOfSegments(new[]
+                {
+                    new[] { new Tuple<int, int>(1, 2), new Tuple<int, int>(4, 6) },
+                    new[] { new Tuple<int, int>(1, 2), new Tuple<int, int>(5, 10) },
+                });
+
+            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(new Tuple<int, int>(1, 2), result[0]);
+            Assert.AreEqual(new Tuple<int, int>(5, 6), result[1]);
+        }
+
         private static FlatImage LoadFlatImageFromResource(string resourceName)
         {
             FlatImage flatImage;

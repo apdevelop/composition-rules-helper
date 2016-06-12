@@ -55,6 +55,8 @@
             return result;
         }
 
+        // TODO: move to separate class
+
         public static UInt32[] GetDerivative(UInt32[] stripe)
         {
             var result = new UInt32[stripe.Length];
@@ -122,6 +124,56 @@
         private static bool CheckSegmentLength(Tuple<int, int> segment, int minimalSegmentLength)
         {
             return ((segment.Item2 - segment.Item1 + 1) >= minimalSegmentLength);
+        }
+
+        public static Tuple<int, int> IntersectionOfSegments(Tuple<int, int> segment1, Tuple<int, int> segment2)
+        {
+            if ((segment1.Item1 > segment2.Item2) || (segment1.Item2 < segment2.Item1))
+            {
+                return null;
+            }
+            else
+            {
+                var start = Math.Max(segment1.Item1, segment2.Item1);
+                var end = Math.Min(segment1.Item2, segment2.Item2);
+                return new Tuple<int, int>(start, end);
+            }
+        }
+
+        public static IList<Tuple<int, int>> IntersectionOfSegments(IEnumerable<IList<Tuple<int, int>>> lines)
+        {
+            var sum = new List<Tuple<int, int>>();
+            foreach (var line in lines)
+            {
+                if (sum.Count == 0)
+                {
+                    sum.AddRange(line);
+                }
+                else
+                { 
+                    // Perform intersection checks
+                    var newSum = new List<Tuple<int, int>>();
+                    foreach (var segmentA in sum)
+                    {
+                        foreach (var segmentB in line)
+                        {
+                            var r = IntersectionOfSegments(segmentA, segmentB);
+                            if (r != null)
+                            {
+                                newSum.Add(r);
+                            }
+                        }
+                    }
+
+                    sum = newSum;
+                    if (sum.Count == 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return sum;
         }
 
         public bool CompareWithFragment(FlatImage fragment, int startX, int startY)
