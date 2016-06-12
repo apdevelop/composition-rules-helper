@@ -4,3 +4,7 @@ Dist/*.exe
 Src/*.suo
 Src/**/[Bb]in/
 Src/**/[Oo]bj/
+
+Src/**/StyleCop.Cache
+
+Src/packages/

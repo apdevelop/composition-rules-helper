@@ -46,6 +46,7 @@
     <Compile Include="Geometry\Point.cs" />
     <Compile Include="Geometry\Rectangle.cs" />
     <Compile Include="Geometry\Utils.cs" />
+    <Compile Include="Grids\GridCreator.cs" />
     <Compile Include="Grids\GridModeItem.cs" />
     <Compile Include="Grids\GridType.cs" />
     <Compile Include="Grids\Orientation.cs" />

@@ -1,53 +1,43 @@
-﻿namespace ScreenGrid.ViewModels
+﻿namespace ScreenGrid.Models.Grids
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using ScreenGrid.Models.Geometry;
-    using ScreenGrid.Models.Grids;
 
-    public class GridCreator
+    public static class GridCreator
     {
-        static GridCreator()
-        {
-        
-        }
-
-        private static IEnumerable<Line> CreateLines(Point[] points)
-        {
-            var res = new List<Line>();
-
-            for (var i = 0; i < points.Length; i += 2)
-            {
-                res.Add(new Line(new Point(points[i].X, points[i].Y), new Point(points[i + 1].X, points[i + 1].Y)));
-            }
-
-            return res;
-        }
-
-        public static Line[] Transform(IEnumerable<Line> src,
-           Rotation rotation, bool isFlippedHorizontal, bool isFlippedVertical,
-           double RenderWidth, double RenderHeight)
+        public static Line[] Transform(
+            IEnumerable<Line> src,
+            Rotation rotation,
+            bool isFlippedHorizontal,
+            bool isFlippedVertical,
+            double width,
+            double height)
         {
             var lines = src.ToArray<Line>();
             var res = new Line[lines.Length];
 
             for (var i = 0; i < lines.Length; i++)
             {
-                var newp1 = TransformPoint(lines[i].p1, rotation, isFlippedHorizontal, isFlippedVertical, RenderWidth, RenderHeight);
-                var newp2 = TransformPoint(lines[i].p2, rotation, isFlippedHorizontal, isFlippedVertical, RenderWidth, RenderHeight);
+                var newp1 = TransformPoint(lines[i].p1, rotation, isFlippedHorizontal, isFlippedVertical, width, height);
+                var newp2 = TransformPoint(lines[i].p2, rotation, isFlippedHorizontal, isFlippedVertical, width, height);
                 res[i] = new Line(newp1, newp2);
             }
 
             return res;
         }
 
-        public static Point TransformPoint(Point pts,
-            Rotation rotation, bool isFlippedHorizontal, bool isFlippedVertical,
-            double RenderWidth, double RenderHeight)
+        public static Point TransformPoint(
+            Point point,
+            Rotation rotation,
+            bool isFlippedHorizontal,
+            bool isFlippedVertical,
+            double width,
+            double height)
         {
-            var res = new Point(pts.X, pts.Y);
+            var res = new Point(point.X, point.Y);
 
             if (rotation != Rotation.R0)
             {
@@ -57,8 +47,8 @@
                 var cy = 0.5;
                 res.X -= cx;
                 res.Y -= cy;
-                var xnew = res.X * Math.Cos(angle) - res.Y * Math.Sin(angle);
-                var ynew = res.X * Math.Sin(angle) + res.Y * Math.Cos(angle);
+                var xnew = (res.X * Math.Cos(angle)) - (res.Y * Math.Sin(angle));
+                var ynew = (res.X * Math.Sin(angle)) + (res.Y * Math.Cos(angle));
                 res.X = xnew + cx;
                 res.Y = ynew + cy;
             }
@@ -75,20 +65,28 @@
             }
 
             // Denormalize (to screen coordinate system)
-            res.X *= RenderWidth;
-            res.Y *= RenderHeight;
+            res.X *= width;
+            res.Y *= height;
 
             return res;
         }
 
-        public static IEnumerable<Line> CreateGrid(GridType gridMode, double width, double height)
+        /// <summary>
+        /// Creates list of lines, which forms the selected grid type
+        /// </summary>
+        /// <param name="gridType">Selected type of grid</param>
+        /// <param name="width">Width of output image</param>
+        /// <param name="height">Height of output image</param>
+        /// <returns>List of lines</returns>
+        public static IEnumerable<Line> CreateGrid(GridType gridType, double width, double height)
         {
-            switch (gridMode)
+            switch (gridType)
             {
                 case GridType.None:
                     {
                         return new List<Line>();
                     }
+
                 case GridType.Thirds:
                     {
                         var points = new[]
@@ -101,17 +99,19 @@
 
                         return CreateLines(points);
                     }
+
                 case GridType.DiagonalOfThirds:
                     {
                         var points = new[]
                             {
                                 new Point(0.0, 1.0),  new Point(1.0, 0.0),
-                                new Point(0.0, 1.0 - RatioConstants.OneThird / 2.0),  new Point(1.0 - RatioConstants.OneThird / 2.0, 0.0),
+                                new Point(0.0, 1.0 - (RatioConstants.OneThird / 2.0)),  new Point(1.0 - (RatioConstants.OneThird / 2.0), 0.0),
                                 new Point(RatioConstants.OneThird / 2.0, 1.0),  new Point(1.0, RatioConstants.OneThird / 2.0),
                             };
 
                         return CreateLines(points);
                     }
+
                 case GridType.GoldenRatio:
                     {
                         var points = new[]
@@ -124,6 +124,7 @@
 
                         return CreateLines(points);
                     }
+
                 case GridType.GoldenTriangle:
                     {
                         var srcPoints = new List<Point>(6);
@@ -154,6 +155,7 @@
 
                         return CreateLines(srcPoints.ToArray());
                     }
+
                 case GridType.GoldenDiagonal:
                     {
                         var points = new[]
@@ -165,6 +167,7 @@
 
                         return CreateLines(points);
                     }
+
                 case GridType.FibonacciRectangles:
                     {
                         var points = new[]
@@ -173,20 +176,21 @@
                                 new Point(RatioConstants.Phi5D8, RatioConstants.Phi3D8),  new Point(1.0, RatioConstants.Phi3D8),
 
                                 // v
-                                new Point(RatioConstants.Phi5D8 + RatioConstants.Phi3D8*RatioConstants.Phi3D8, RatioConstants.Phi3D8),   
-                                new Point(RatioConstants.Phi5D8 + RatioConstants.Phi3D8*RatioConstants.Phi3D8, 0.0),
+                                new Point(RatioConstants.Phi5D8 + (RatioConstants.Phi3D8 * RatioConstants.Phi3D8), RatioConstants.Phi3D8),   
+                                new Point(RatioConstants.Phi5D8 + (RatioConstants.Phi3D8 * RatioConstants.Phi3D8), 0.0),
 
                                 // h
-                                new Point(RatioConstants.Phi5D8 + RatioConstants.Phi3D8*RatioConstants.Phi3D8, RatioConstants.Phi3D8*RatioConstants.Phi5D8),   
-                                new Point(RatioConstants.Phi5D8, RatioConstants.Phi3D8*RatioConstants.Phi5D8),
+                                new Point(RatioConstants.Phi5D8 + (RatioConstants.Phi3D8 * RatioConstants.Phi3D8), RatioConstants.Phi3D8 * RatioConstants.Phi5D8),   
+                                new Point(RatioConstants.Phi5D8, RatioConstants.Phi3D8 * RatioConstants.Phi5D8),
 
                                 // v
-                                new Point(RatioConstants.Phi5D8 + RatioConstants.Phi3D8*RatioConstants.Phi3D8*RatioConstants.Phi5D8, RatioConstants.Phi3D8),   
-                                new Point(RatioConstants.Phi5D8 + RatioConstants.Phi3D8*RatioConstants.Phi3D8*RatioConstants.Phi5D8, RatioConstants.Phi3D8*RatioConstants.Phi5D8),
+                                new Point(RatioConstants.Phi5D8 + (RatioConstants.Phi3D8 * RatioConstants.Phi3D8 * RatioConstants.Phi5D8), RatioConstants.Phi3D8),   
+                                new Point(RatioConstants.Phi5D8 + (RatioConstants.Phi3D8 * RatioConstants.Phi3D8 * RatioConstants.Phi5D8), RatioConstants.Phi3D8 * RatioConstants.Phi5D8),
                             };
 
                         return CreateLines(points);
                     }
+
                 // TODO: case GridType.GoldenSpiral:
                 ////{
                 ////    var res = new List<Line>();
@@ -211,9 +215,21 @@
                 ////}
                 default:
                     {
-                        throw new ArgumentException(gridMode.ToString());
+                        throw new ArgumentException(gridType.ToString());
                     }
             }
+        }
+
+        private static IEnumerable<Line> CreateLines(Point[] points)
+        {
+            var res = new List<Line>();
+
+            for (var i = 0; i < points.Length; i += 2)
+            {
+                res.Add(new Line(new Point(points[i].X, points[i].Y), new Point(points[i + 1].X, points[i + 1].Y)));
+            }
+
+            return res;
         }
     }
 }
