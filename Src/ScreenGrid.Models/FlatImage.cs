@@ -66,8 +66,6 @@
             return result;
         }
 
-        // TODO: move to separate class
-
         public static UInt32[] GetDerivative(UInt32[] stripe)
         {
             var result = new UInt32[stripe.Length];
@@ -81,144 +79,14 @@
             return result;
         }
 
-        /// <summary>
-        /// Search for all-zero segments of array with given minimal length
-        /// </summary>
-        /// <param name="array">Input array</param>
-        /// <param name="minimalSegmentLength">Minimal length of segment</param>
-        /// <returns>List of segments (startIndex, endIndex) which contains only zeros</returns>
-        public static IList<Tuple<int, int>> FindZeroSegments(UInt32[] array, int minimalSegmentLength)
+        private IList<IntegerSegment> FindHorizontalZeroSegments(int iy, int minimalSegmentLength)
         {
-            var result = new List<Tuple<int, int>>();
-
-            if (array.Length < minimalSegmentLength)
-            {
-                return result;
-            }
-
-            int lastZero = -1;
-            for (var i = 0; i < array.Length; i++)
-            {
-                if (array[i] == 0)
-                {
-                    if (lastZero == -1)
-                    {
-                        lastZero = i;
-                    }
-
-                    if (i == (array.Length - 1))
-                    {
-                        var segment = new Tuple<int, int>(lastZero, i);
-                        if (CheckSegmentLength(segment, minimalSegmentLength))
-                        {
-                            result.Add(segment);
-                        }
-                    }
-                }
-                else
-                {
-                    if (lastZero != -1)
-                    {
-                        var segment = new Tuple<int, int>(lastZero, i - 1);
-                        lastZero = -1;
-                        if (CheckSegmentLength(segment, minimalSegmentLength))
-                        {
-                            result.Add(segment);
-                        }
-                    }
-                }
-            }
-
-            return result;
+            return IntegerSegmentUtils.FindZeroSegments(FlatImage.GetDerivative(this.GetHorizontalStripe(iy)), minimalSegmentLength);
         }
 
-        private static bool CheckSegmentLength(Tuple<int, int> segment, int minimalSegmentLength)
+        private IList<IntegerSegment> FindVerticalZeroSegments(int ix, int minimalSegmentLength)
         {
-            return ((segment.Item2 - segment.Item1 + 1) >= minimalSegmentLength);
-        }
-
-        public static Tuple<int, int> IntersectionOfSegments(Tuple<int, int> segment1, Tuple<int, int> segment2)
-        {
-            if ((segment1.Item1 > segment2.Item2) || (segment1.Item2 < segment2.Item1))
-            {
-                return null;
-            }
-            else
-            {
-                var start = Math.Max(segment1.Item1, segment2.Item1);
-                var end = Math.Min(segment1.Item2, segment2.Item2);
-                return new Tuple<int, int>(start, end);
-            }
-        }
-
-        public static IList<Tuple<int, int>> IntersectionOfSegments(IEnumerable<IList<Tuple<int, int>>> lines)
-        {
-            var sum = new List<Tuple<int, int>>();
-            foreach (var line in lines)
-            {
-                if (sum.Count == 0)
-                {
-                    sum.AddRange(line);
-                }
-                else
-                {
-                    // Perform intersection checks
-                    var newSum = new List<Tuple<int, int>>();
-                    foreach (var segmentA in sum)
-                    {
-                        foreach (var segmentB in line)
-                        {
-                            var r = IntersectionOfSegments(segmentA, segmentB);
-                            if (r != null)
-                            {
-                                newSum.Add(r);
-                            }
-                        }
-                    }
-
-                    sum = newSum;
-                    if (sum.Count == 0)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return sum;
-        }
-
-        public static Tuple<int, int> SegmentsWithMaxDistance(IList<Tuple<int, int>> segments)
-        {
-            if (segments.Count < 2)
-            {
-                throw new ArgumentException();
-            }
-
-            var i1 = 0;
-            var i2 = 0;
-            var maxDistance = 0;
-            for (var i = 0; i < segments.Count - 1; i++)
-            {
-                var distance = segments[i + 1].Item1 - segments[i].Item2;
-                if (distance > maxDistance)
-                {
-                    i1 = segments[i].Item2;
-                    i2 = segments[i + 1].Item1;
-                    maxDistance = distance;
-                }
-            }
-
-            return new Tuple<int, int>(i1, i2);
-        }
-
-        private IList<Tuple<int, int>> FindHorizontalZeroSegments(int iy, int minimalSegmentLength)
-        {
-            return FlatImage.FindZeroSegments(FlatImage.GetDerivative(this.GetHorizontalStripe(iy)), minimalSegmentLength);
-        }
-
-        private IList<Tuple<int, int>> FindVerticalZeroSegments(int ix, int minimalSegmentLength)
-        {
-            return FlatImage.FindZeroSegments(FlatImage.GetDerivative(this.GetVerticalStripe(ix)), minimalSegmentLength);
+            return IntegerSegmentUtils.FindZeroSegments(FlatImage.GetDerivative(this.GetVerticalStripe(ix)), minimalSegmentLength);
         }
 
         public Models.Geometry.Rectangle FindBoundingsOfInnerImage()
@@ -226,13 +94,13 @@
             // TODO: add tests for this method
             const int minimalSegmentLength = 8;
 
-            var stripeCH = FlatImage.FindZeroSegments(FlatImage.GetDerivative(this.GetHorizontalStripe(this.Height / 2)), minimalSegmentLength);
-            var stripeCV = FlatImage.FindZeroSegments(FlatImage.GetDerivative(this.GetVerticalStripe(this.Width / 2)), minimalSegmentLength);
+            var stripeCH = IntegerSegmentUtils.FindZeroSegments(FlatImage.GetDerivative(this.GetHorizontalStripe(this.Height / 2)), minimalSegmentLength);
+            var stripeCV = IntegerSegmentUtils.FindZeroSegments(FlatImage.GetDerivative(this.GetVerticalStripe(this.Width / 2)), minimalSegmentLength);
 
             // TODO: optimize code
             for (var iy = 1 * this.Height / 4; iy < 3 * this.Height / 4; iy += minimalSegmentLength)
             {
-                stripeCH = FlatImage.IntersectionOfSegments(new[]
+                stripeCH = IntegerSegmentUtils.IntersectionOfSegments(new[]
                     { 
                         stripeCH, 
                         FindHorizontalZeroSegments(iy, minimalSegmentLength)
@@ -241,7 +109,7 @@
 
             for (var ix = 1 * this.Width / 4; ix < 3 * this.Width / 4; ix += minimalSegmentLength)
             {
-                stripeCV = FlatImage.IntersectionOfSegments(new[]
+                stripeCV = IntegerSegmentUtils.IntersectionOfSegments(new[]
                     { 
                         stripeCV, 
                         FindVerticalZeroSegments(ix, minimalSegmentLength)
@@ -250,15 +118,15 @@
 
             if ((stripeCH.Count > 1) && (stripeCV.Count > 1))
             {
-                var maxH = FlatImage.SegmentsWithMaxDistance(stripeCH);
-                var maxV = FlatImage.SegmentsWithMaxDistance(stripeCV);
+                var maxH = IntegerSegmentUtils.SegmentsWithMaxDistance(stripeCH);
+                var maxV = IntegerSegmentUtils.SegmentsWithMaxDistance(stripeCV);
 
                 return new Geometry.Rectangle
                 {
-                    X = maxH.Item1 + 1,
-                    Y = maxV.Item1 + 1,
-                    Width = maxH.Item2 - maxH.Item1 - 2,
-                    Height = maxV.Item2 - maxV.Item1 - 2,
+                    X = maxH.Start + 1,
+                    Y = maxV.Start + 1,
+                    Width = maxH.End - maxH.Start - 2,
+                    Height = maxV.End - maxV.Start - 2,
                 };
             }
             else

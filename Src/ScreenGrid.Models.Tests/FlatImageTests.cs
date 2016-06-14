@@ -54,7 +54,7 @@
             {
                 var stripe = flatImage.GetHorizontalStripe(iy);
                 var derivative = FlatImage.GetDerivative(stripe);
-                var segments = FlatImage.FindZeroSegments(derivative, minimalSegmentLength);
+                var segments = IntegerSegmentUtils.FindZeroSegments(derivative, minimalSegmentLength);
 
                 Assert.AreEqual(2, segments.Count, String.Format("iy={0}", iy));
             }
@@ -71,120 +71,6 @@
             Assert.AreEqual(10, result.Y);
             Assert.AreEqual(40, result.Width);
             Assert.AreEqual(28, result.Height);
-        }
-
-        [Test]
-        public void FindZeroSegmentsTest1()
-        {
-            var array = new UInt32[] { 1, 0, 0, 0, 0, 0, 1, 2, 1, 0, 3, 4, 0, 3, 5 };
-            var result = FlatImage.FindZeroSegments(array, 4);
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(1, result[0].Item1);
-            Assert.AreEqual(5, result[0].Item2);
-        }
-
-        [Test]
-        public void FindZeroSegmentsTestThreeSegments()
-        {
-            var array = new UInt32[] { 1, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 3, 4, 0, 0, 3, 0, 5 };
-            var result = FlatImage.FindZeroSegments(array, 2);
-            Assert.AreEqual(3, result.Count);
-            Assert.AreEqual(1, result[0].Item1);
-            Assert.AreEqual(5, result[0].Item2);
-            Assert.AreEqual(9, result[1].Item1);
-            Assert.AreEqual(10, result[1].Item2);
-            Assert.AreEqual(13, result[2].Item1);
-            Assert.AreEqual(14, result[2].Item2);
-        }
-
-        [Test]
-        public void FindZeroSegmentsTestNoSegments()
-        {
-            var array = new UInt32[] { 1, 0, 0, 1, 2, 3 };
-            var result = FlatImage.FindZeroSegments(array, 3);
-            Assert.AreEqual(0, result.Count);
-        }
-
-        [Test]
-        public void FindZeroSegmentsTestShortAllZeroSegment()
-        {
-            var array = new UInt32[] { 0, 0, 0, 0, };
-            var result = FlatImage.FindZeroSegments(array, 4);
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(0, result[0].Item1);
-            Assert.AreEqual(3, result[0].Item2);
-        }
-
-        [Test]
-        public void FindZeroSegmentsTestAllZeroSegment()
-        {
-            var array = new UInt32[] { 0, 0, 0, 0, 0, 0 };
-            var result = FlatImage.FindZeroSegments(array, 3);
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(0, result[0].Item1);
-            Assert.AreEqual(5, result[0].Item2);
-        }
-
-        [Test]
-        public void FindZeroSegmentsTestSimpleSegment1()
-        {
-            var array = new UInt32[] { 1, 0, 0, 0, 0, 0 };
-            var result = FlatImage.FindZeroSegments(array, 3);
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(1, result[0].Item1);
-            Assert.AreEqual(5, result[0].Item2);
-        }
-
-        [Test]
-        public void FindZeroSegmentsTestSimpleSegment2()
-        {
-            var array = new UInt32[] { 0, 0, 0, 0, 0, 1 };
-            var result = FlatImage.FindZeroSegments(array, 3);
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual(0, result[0].Item1);
-            Assert.AreEqual(4, result[0].Item2);
-        }
-
-        [Test]
-        public void IntersectionOfSegmentsFullIntersection()
-        {
-            var result = FlatImage.IntersectionOfSegments(
-                new Tuple<int, int>(1, 2),
-                new Tuple<int, int>(1, 2));
-            Assert.AreEqual(new Tuple<int, int>(1, 2), result);
-        }
-
-        [Test]
-        public void IntersectionOfSegmentsPartialIntersection()
-        {
-            var a = new Tuple<int, int>(1, 4);
-            var b = new Tuple<int, int>(2, 8);
-
-            Assert.AreEqual(new Tuple<int, int>(2, 4), FlatImage.IntersectionOfSegments(a, b));
-            Assert.AreEqual(new Tuple<int, int>(2, 4), FlatImage.IntersectionOfSegments(b, a));
-        }
-
-        [Test]
-        public void IntersectionOfSegmentsNoIntersection()
-        {
-            var result = FlatImage.IntersectionOfSegments(
-                new Tuple<int, int>(1, 2),
-                new Tuple<int, int>(4, 5));
-            Assert.IsNull(result);
-        }
-
-        [Test]
-        public void IntersectionOfSegments()
-        {
-            var result = FlatImage.IntersectionOfSegments(new[]
-                {
-                    new[] { new Tuple<int, int>(1, 2), new Tuple<int, int>(4, 6) },
-                    new[] { new Tuple<int, int>(1, 2), new Tuple<int, int>(5, 10) },
-                });
-
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual(new Tuple<int, int>(1, 2), result[0]);
-            Assert.AreEqual(new Tuple<int, int>(5, 6), result[1]);
         }
 
         private static FlatImage LoadFlatImageFromResource(string resourceName)

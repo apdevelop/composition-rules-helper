@@ -50,6 +50,8 @@
     <Compile Include="Grids\GridModeItem.cs" />
     <Compile Include="Grids\GridType.cs" />
     <Compile Include="Grids\Orientation.cs" />
+    <Compile Include="IntegerSegment.cs" />
+    <Compile Include="IntegerSegmentUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Grids\RatioConstants.cs" />
     <Compile Include="Grids\Rotation.cs" />
