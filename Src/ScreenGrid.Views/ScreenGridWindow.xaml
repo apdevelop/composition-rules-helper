@@ -94,7 +94,26 @@
                            Width="200" 
                            HorizontalAlignment="Stretch" 
                            MouseDown="Window_MouseDown" />
-                <TextBlock VerticalAlignment="Center" Margin="8,0,0,0" 
+                <ComboBox   HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Width="85" Height="20"
+                            FontSize="10"
+                            ItemsSource="{Binding LineColors, Mode=OneTime}"
+                            SelectedItem="{Binding SelectedLineColor, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="2">
+                                <Rectangle Stroke="Black" 
+                                      SnapsToDevicePixels="True" 
+                                      Width="12" Height="8"
+                                      Fill="{Binding Path=Brush}" />
+                                <TextBlock Margin="4 0 2 0" VerticalAlignment="Center"
+                                           Text="{Binding Path=Name}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" 
+                           Margin="88,0,0,0" 
                            IsHitTestVisible="False" 
                            ToolTip="Size of grid internal area"
                            Text="{Binding CaptionText}" />

@@ -107,11 +107,45 @@
             }
         }
 
+        private Color selectedLineColor = Colors.White;
+
+        private static readonly List<Color> lineColors = new List<Color>(new[]
+                {
+                    Colors.White,
+                    Colors.Magenta,
+                    Colors.Black,
+                });
+
+        public IList<ColorItemViewModel> LineColors
+        {
+            get
+            {
+                return lineColors.Select(c => new ColorItemViewModel(c)).ToList();
+            }
+        }
+
+        public ColorItemViewModel SelectedLineColor
+        {
+            get
+            {
+                return new ColorItemViewModel(this.selectedLineColor);
+            }
+
+            set
+            {
+                if (this.selectedLineColor != value.Color)
+                {
+                    this.selectedLineColor = value.Color;
+                    this.UpdateContentControl();
+                }
+            }
+        }
+
         private Brush LineBrush
         {
             get
             {
-                return new SolidColorBrush(Colors.White) { Opacity = 0.8 };
+                return new SolidColorBrush(this.selectedLineColor) { Opacity = 0.75 };
             }
         }
 
