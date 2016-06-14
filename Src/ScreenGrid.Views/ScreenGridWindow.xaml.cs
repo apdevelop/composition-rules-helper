@@ -41,7 +41,6 @@
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.cntxMenu = CreateContextMenu();
-            this.vm.SnapToRenderView();
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

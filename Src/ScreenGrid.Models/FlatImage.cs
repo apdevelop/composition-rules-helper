@@ -89,7 +89,7 @@
             return IntegerSegmentUtils.FindZeroSegments(FlatImage.GetDerivative(this.GetVerticalStripe(ix)), minimalSegmentLength);
         }
 
-        public Models.Geometry.Rectangle FindBoundingsOfInnerImage()
+        public Models.Geometry.Rectangle FindBoundsOfInnerImage()
         {
             // TODO: add tests for this method
             const int minimalSegmentLength = 8;

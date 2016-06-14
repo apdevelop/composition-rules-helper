@@ -61,11 +61,11 @@
         }
 
         [Test]
-        public void FindBoundingsOfInnerImage()
+        public void FindBoundsOfInnerImage()
         {
             var flatImage = LoadFlatImageFromResource("ScreenGrid.Models.Tests.Resources.ImageSimple.png");
 
-            var result = flatImage.FindBoundingsOfInnerImage();
+            var result = flatImage.FindBoundsOfInnerImage();
 
             Assert.AreEqual(12, result.X);
             Assert.AreEqual(10, result.Y);

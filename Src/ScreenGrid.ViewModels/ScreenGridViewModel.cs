@@ -30,7 +30,7 @@
             this.RotateCounterClockwiseCommand = new RelayCommand((o) => { this.Rot = Rotator.RotateCounterClockwise(this.Rot); });
             this.FlipHorizontalCommand = new RelayCommand((o) => { this.FlipH = !this.FlipH; });
             this.FlipVerticalCommand = new RelayCommand((o) => { this.FlipV = !this.FlipV; });
-            this.SnapCommand = new RelayCommand((o) => { this.SnapToRenderView(); });
+            this.SnapCommand = new RelayCommand((o) => { this.SnapToImageBounds(); });
         }
 
         public ICommand RotateClockwiseCommand { get; private set; }
@@ -260,24 +260,10 @@
             }
         }
 
-        private IList<string> GetWindowClassNames()
-        {
-            var classNames = new List<string>();
-
-            classNames.Add(Models.AppsInterop.PhotoViewerWindow.MainWindowClassName);
-
-            var orw = Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses();
-            classNames.AddRange(orw.Select(w => w.ClassName));
-
-            classNames.Add("MozillaWindowClass"); // TODO: do not use window class names, check any applications with topmost windows
-
-            return classNames;
-        }
-
-        public void SnapToRenderView()
+        public void SnapToImageBounds()
         {
             // select foreground window from several processes of supported applications
-            var nativeWindow = Models.AppsInterop.NativeWindow.GetTopMostWindow(this.GetWindowClassNames());
+            var nativeWindow = Models.AppsInterop.NativeWindow.GetTopMostWindow();
 
             if (nativeWindow != null)
             {
@@ -298,26 +284,26 @@
                         var bitmap = nativeWindow.GetShot();
                         var flatImage = new Models.FlatImage(bitmap);
 
-                        Models.Geometry.Rectangle imageBoundings;
+                        Models.Geometry.Rectangle imageBounds;
                         if (Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses().Any(w => w.ClassName == nativeWindow.ClassName))
                         {
                             // TODO: remove this Octane Render specific code
-                            imageBoundings = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
+                            imageBounds = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
                         }
                         else
                         {
-                            imageBoundings = flatImage.FindBoundingsOfInnerImage();
+                            imageBounds = flatImage.FindBoundsOfInnerImage();
                         }
 
                         var nativeWindowLocation = new Models.Geometry.Point(nativeWindow.Location.X, nativeWindow.Location.Y);
-                        return new Tuple<Models.Geometry.Rectangle, Models.Geometry.Point>(imageBoundings, nativeWindowLocation);
+                        return new Tuple<Models.Geometry.Rectangle, Models.Geometry.Point>(imageBounds, nativeWindowLocation);
                     }).ContinueWith((t) =>
                     {
-                        var imageBoundings = t.Result.Item1;
+                        var imageBounds = t.Result.Item1;
                         var windowLocation = t.Result.Item2;
-                        if (!imageBoundings.IsEmpty)
+                        if (!imageBounds.IsEmpty)
                         {
-                            if ((imageBoundings.Width > 150) && (imageBoundings.Height > 50))
+                            if ((imageBounds.Width > 150) && (imageBounds.Height > 50))
                             {
                                 this.PositionWindow(t.Result.Item2, t.Result.Item1);
                             }

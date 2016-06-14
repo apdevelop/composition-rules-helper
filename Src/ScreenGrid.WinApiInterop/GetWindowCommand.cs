@@ -2,7 +2,7 @@
 {
     // http://pinvoke.net/default.aspx/user32/GetWindow.html
 
-    enum GetWindowCommand : uint
+    public enum GetWindowCommand : uint
     {
         GW_HWNDFIRST = 0,
         GW_HWNDLAST = 1,

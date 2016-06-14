@@ -89,7 +89,7 @@
             return WinApiInterop.NativeMethods.GetWindowImage(this.hWnd, 0, 0, (rect.Right - rect.Left) + 1, (rect.Bottom - rect.Top) + 1); // TODO: +1 ?
         }
 
-        public static NativeWindow GetTopMostWindow(IEnumerable<string> classNames)
+        public static NativeWindow GetTopMostWindow()
         {
             // Is there are win32 function to get a list off all top level windows
             // with a given class name?
@@ -98,23 +98,21 @@
             // about.
 
             // https://code.msdn.microsoft.com/windowsapps/Enumerate-top-level-9aa9d7c1
-
-            var results = new List<IntPtr>();
-            //WinApiInterop.WinApiUtils.EnumWindows(new WinApiInterop.WinApiUtils.EnumWindowsProc(EnumTheWindows), IntPtr.Zero);
-
             // http://stackoverflow.com/a/296014
 
+            var results = new List<NativeWindow>();
             WinApiInterop.NativeMethods.EnumWindows((hWnd, lParam) =>
             {
-                var win = new NativeWindow(hWnd);
-
-                foreach (var className in classNames)
+                var window = new NativeWindow(hWnd);
+                
+                // Skip some
+                if ((!window.IsMinimized) && (window.IsVisible))
                 {
-                    if ((String.Compare(win.ClassName, className, StringComparison.OrdinalIgnoreCase) == 0) &&
-                        (!win.IsMinimized) && 
-                        (win.IsVisible))
+                    var className = window.ClassName;
+                    // TODO: better checks for inappropriate windows
+                    if ((className != "Shell_TrayWnd") && (className != "Button") && (!className.Contains("ScreenGrid")))
                     {
-                        results.Add(hWnd);
+                        results.Add(window);
                     }
                 }
 
@@ -123,12 +121,17 @@
 
             if (results.Count > 0)
             {
-                return new NativeWindow(results[0]);
+                return results[0];
             }
             else
             {
                 return null;
             }
+        }
+
+        public override string ToString()
+        {
+            return this.ClassName;
         }
     }
 }
