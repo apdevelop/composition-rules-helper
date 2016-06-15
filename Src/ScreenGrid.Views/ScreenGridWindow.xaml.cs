@@ -9,17 +9,15 @@
     {
         // TODO: Better separation of concerns (MVVM pattern)
 
-        // TODO: Target to browser window
-        // TODO: Frame proportions detection
         // TODO: Fix 'Golden Spiral' grid
-        // TODO: Snap to TotalCommander Lister window
         // TODO: Disable rotate/flip buttons depends on grid type
 
         // TODO: Find corners by colors change in uniform color
         // TODO: 'Auto-snap' option on/off
         // TODO: Move window by cursor keys
         // TODO: Remove image files from resources
-        // TODO: add grid color selection
+
+        // TODO: show checkboxes in menu items
 
         public ScreenGridWindow()
         {

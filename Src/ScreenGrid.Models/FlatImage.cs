@@ -91,7 +91,8 @@
 
         public Models.Geometry.Rectangle FindBoundsOfInnerImage()
         {
-            // TODO: add tests for this method
+            // TODO: implement more robust algorithm
+            // TODO: add more tests for this method
             const int minimalSegmentLength = 8;
 
             var stripeCH = IntegerSegmentUtils.FindZeroSegments(FlatImage.GetDerivative(this.GetHorizontalStripe(this.Height / 2)), minimalSegmentLength);
