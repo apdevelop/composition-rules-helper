@@ -41,6 +41,7 @@
     <Compile Include="AppsInterop\NativeWindow.cs" />
     <Compile Include="AppsInterop\OctaneRenderWindow.cs" />
     <Compile Include="AppsInterop\PhotoViewerWindow.cs" />
+    <Compile Include="AspectRatioDetector.cs" />
     <Compile Include="FlatImage.cs" />
     <Compile Include="Geometry\Line.cs" />
     <Compile Include="Geometry\Point.cs" />
