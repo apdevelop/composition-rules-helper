@@ -258,6 +258,7 @@
         {
             this.contentControl.Children.Clear();
 
+            // TODO: place calculated results in cache
             var gridLines = GridCreator.CreateGrid(this.gridMode, this.RenderWidth, this.RenderHeight);
 
             var lines = GridCreator.Transform(gridLines, this.rotation, this.isFlippedHorizontal, this.isFlippedVertical, this.RenderWidth, this.RenderHeight);

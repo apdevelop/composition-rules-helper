@@ -1,6 +1,7 @@
 ﻿namespace ScreenGrid.Models
 {
     using System;
+    using System.Globalization;
 
     /// <summary>
     /// Representation of segment
@@ -55,6 +56,11 @@
         public static bool operator !=(IntegerSegment x, IntegerSegment y)
         {
             return (!(x == y));
+        }
+
+        public override string ToString()
+        {
+            return String.Format(CultureInfo.InvariantCulture, "[{0} {1}]", this.Start, this.End);
         }
     }
 }

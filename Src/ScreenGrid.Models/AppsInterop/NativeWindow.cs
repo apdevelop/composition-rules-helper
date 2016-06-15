@@ -110,7 +110,8 @@
                 {
                     var className = window.ClassName;
                     // TODO: better checks for inappropriate windows
-                    if ((className != "Shell_TrayWnd") && (className != "Button") && (!className.Contains("ScreenGrid")))
+                    if ((className != "Shell_TrayWnd") && (className != "Button") && (!className.Contains("ScreenGrid")) &&
+                        (!className.Contains("HwndWrapper")))
                     {
                         results.Add(window);
                     }

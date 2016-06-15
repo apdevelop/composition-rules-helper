@@ -77,7 +77,7 @@
         /// <param name="gridType">Selected type of grid</param>
         /// <param name="width">Width of output image</param>
         /// <param name="height">Height of output image</param>
-        /// <returns>List of lines</returns>
+        /// <returns>List of lines; points coordinates are in normalized range [0..1]</returns>
         public static IEnumerable<Line> CreateGrid(GridType gridType, double width, double height)
         {
             switch (gridType)
@@ -170,54 +170,131 @@
 
                 case GridType.FibonacciRectangles:
                     {
-                        var points = new[]
+                        // https://en.wikipedia.org/wiki/Fibonacci_number
+                        // http://stackoverflow.com/a/18121331/1182448
+
+                        // Current Fibonacci numbers
+                        var current = 1;
+                        var previous = 0;
+
+                        // Current bounding box
+                        var left = 0;
+                        var right = 1;
+                        var top = 0;
+                        var bottom = 0;
+
+                        const int NumberOfRectangles = 10;
+
+                        var lines = new List<Line>();
+                        for (var i = 0; i < NumberOfRectangles; i++)
+                        {
+                            switch (i % 4)
                             {
-                                new Point(RatioConstants.Phi5D8, 0.0),  new Point(RatioConstants.Phi5D8, 1.0),
-                                new Point(RatioConstants.Phi5D8, RatioConstants.Phi3D8),  new Point(1.0, RatioConstants.Phi3D8),
+                                case 0: // attach to bottom of current rectangle
+                                    lines.AddRange(CreateRectangle(left, right, bottom, bottom + current));
+                                    bottom += current;
+                                    break;
+                                case 1: // attach to right of current rectangle
+                                    lines.AddRange(CreateRectangle(right, right + current, top, bottom));
+                                    right += current;
+                                    break;
+                                case 2: // attach to top of current rectangle
+                                    lines.AddRange(CreateRectangle(left, right, top - current, top));
+                                    top -= current;
+                                    break;
+                                case 3: // attach to left of current rectangle
+                                    lines.AddRange(CreateRectangle(left - current, left, top, bottom));
+                                    left -= current;
+                                    break;
+                            }
 
-                                // v
-                                new Point(RatioConstants.Phi5D8 + (RatioConstants.Phi3D8 * RatioConstants.Phi3D8), RatioConstants.Phi3D8),   
-                                new Point(RatioConstants.Phi5D8 + (RatioConstants.Phi3D8 * RatioConstants.Phi3D8), 0.0),
+                            // Update current fibonacci number
+                            {
+                                var temp = current;
+                                current += previous;
+                                previous = temp;
+                            }
+                        }
 
-                                // h
-                                new Point(RatioConstants.Phi5D8 + (RatioConstants.Phi3D8 * RatioConstants.Phi3D8), RatioConstants.Phi3D8 * RatioConstants.Phi5D8),   
-                                new Point(RatioConstants.Phi5D8, RatioConstants.Phi3D8 * RatioConstants.Phi5D8),
+                        // Scale and auto-fit (stretch all lines to 0..1 output range)
+                        var scaleX = 1.0 / ((double)(right - left));
+                        var scaleY = 1.0 / ((double)(bottom - top));
+                        var offsetX = left;
+                        var offsetY = top;
 
-                                // v
-                                new Point(RatioConstants.Phi5D8 + (RatioConstants.Phi3D8 * RatioConstants.Phi3D8 * RatioConstants.Phi5D8), RatioConstants.Phi3D8),   
-                                new Point(RatioConstants.Phi5D8 + (RatioConstants.Phi3D8 * RatioConstants.Phi3D8 * RatioConstants.Phi5D8), RatioConstants.Phi3D8 * RatioConstants.Phi5D8),
-                            };
+                        lines = lines.Select(r => new Line(
+                            new Point((r.p1.X - offsetX) * scaleX, (r.p1.Y - offsetY) * scaleY),
+                            new Point((r.p2.X - offsetX) * scaleX, (r.p2.Y - offsetY) * scaleY)))
+                            .ToList();
 
-                        return CreateLines(points);
+                        return lines;
                     }
 
-                // TODO: case GridType.GoldenSpiral:
-                ////{
-                ////    var res = new List<Line>();
-
-                ////    // TODO: better algorithm
-                ////    var points = new List<Point>();
-                ////    for (var theta = 0.0; theta < 12.0 * Math.PI; theta += 0.01 * Math.PI)
+                ////case GridType.GoldenSpiral:
                 ////    {
-                ////        var r = 0.2;
-                ////        r = 0.005 * Math.Pow(RatioConstants.GOLDEN_SPIRAL_C_RADIANS, theta);
-                ////        var x = r * Math.Cos(theta);
-                ////        var y = r * Math.Sin(theta);
-                ////        points.Add(new Point(x + 0.5, y + 0.5));
-                ////    }
+                ////        // https://en.wikipedia.org/wiki/Golden_spiral
+                ////        // http://csharphelper.com/blog/2012/05/draw-a-phi-spiral-or-golden-spiral-in-c/
 
-                ////    for (var i = 1; i < points.Count; i++)
-                ////    {
-                ////        res.Add(new Line(new Point(points[i - 1].X, points[i - 1].Y), new Point(points[i].X, points[i].Y)));
-                ////    }
+                ////        var res = new List<Line>();
 
-                ////    return res;
-                ////}
+                ////        // TODO: better algorithm
+                ////        var points = new List<Point>();
+
+                ////        for (var theta = 0.0; theta < 3.0 * 2.0 * Math.PI; theta += 0.05 * Math.PI)
+                ////        {
+                ////            var r = 0.001 * Math.Pow(RatioConstants.GoldenSpiralCInRadians, theta);
+
+                ////            var x = 0.5 + r * Math.Cos(theta);
+                ////            var y = 0.5 + r * Math.Sin(theta);
+                ////            points.Add(new Point(x, y));
+                ////        }
+
+                        ////const int num_slices = 1000;
+
+                        ////var start = new Point(0, 1);
+                        ////var origin = new Point(0.5, 0.5);
+                        ////var dx = start.X - origin.X;
+                        ////var dy = start.Y - origin.Y;
+                        ////var radius = Math.Sqrt(dx * dx + dy * dy);
+                        ////var theta = Math.Atan2(dy, dx);
+
+                        ////var dtheta = Math.PI / 2.0 / num_slices;
+                        ////var factor = 1 - (1 / RatioConstants.Phi) / num_slices * 0.78;
+
+                        ////// Repeat until dist is too small to see.
+                        ////while (radius > 0.01)
+                        ////{
+                        ////    points.Add(new Point(
+                        ////        (origin.X + radius * Math.Cos(theta)),
+                        ////        (origin.Y + radius * Math.Sin(theta))));
+
+                        ////    theta += dtheta;
+                        ////    radius *= factor;
+                        ////}
+
+                    ////    for (var i = 1; i < points.Count; i++)
+                    ////    {
+                    ////        res.Add(new Line(points[i - 1], points[i]));
+                    ////    }
+
+                    ////    return res;
+                    ////}
                 default:
                     {
                         throw new ArgumentException(gridType.ToString());
                     }
             }
+        }
+
+        private static IList<Line> CreateRectangle(int left, int right, int top, int bottom)
+        {
+            return new List<Line>(new[]
+            {
+                new Line(new Point(left, bottom), new Point(right, bottom)),
+                new Line(new Point(right, bottom), new Point(right, top)),
+                new Line(new Point(right, top), new Point(left, top)),
+                new Line(new Point(left, top), new Point(left, bottom)),
+            });
         }
 
         private static IEnumerable<Line> CreateLines(Point[] points)
