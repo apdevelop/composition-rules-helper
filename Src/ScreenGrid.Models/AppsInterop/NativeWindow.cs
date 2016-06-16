@@ -2,6 +2,7 @@
 {
     using System;
     using System.Drawing;
+    using System.Linq;
     using System.Text;
     using System.Collections.Generic;
 
@@ -100,21 +101,35 @@
             // https://code.msdn.microsoft.com/windowsapps/Enumerate-top-level-9aa9d7c1
             // http://stackoverflow.com/a/296014
 
+            var ClassNamesWhiteList = new[] { PhotoViewerWindow.MainWindowClassName, "IEFrame", "Chrome_WidgetWin_1", "MozillaWindowClass", "TLister", };
+            var ClassNamesBlackList = new[] { "Shell_TrayWnd", "Button", "Alternate Owner", };
+            var ClassNamesPartialBlackList = new[] { "ScreenGrid", "HwndWrapper", };
+
             var results = new List<NativeWindow>();
             WinApiInterop.NativeMethods.EnumWindows((hWnd, lParam) =>
             {
                 var window = new NativeWindow(hWnd);
-                
-                // Skip some
+
+                // TODO: better checks for inappropriate windows
+                // TODO: test in another environments
+
+                // Skip inappropriate windows
                 if ((!window.IsMinimized) && (window.IsVisible))
                 {
                     var className = window.ClassName;
-                    // TODO: better checks for inappropriate windows
-                    if ((className != "Shell_TrayWnd") && (className != "Button") && (!className.Contains("ScreenGrid")) &&
-                        (!className.Contains("HwndWrapper")))
+
+                    if (ClassNamesWhiteList.Any(s => (String.Compare(s, className, StringComparison.Ordinal) == 0)))
                     {
                         results.Add(window);
+                        return true;
                     }
+                    else if ((ClassNamesBlackList.Any(s => (String.Compare(s, className, StringComparison.Ordinal) == 0))) ||
+                             (ClassNamesPartialBlackList.Any(s => (className.Contains(s)))))
+                    {
+                        return true;
+                    }
+
+                    results.Add(window);
                 }
 
                 return true;
