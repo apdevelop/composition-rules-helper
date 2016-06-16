@@ -43,7 +43,7 @@
                     new GridModeItem(GridType.GoldenTriangle, "Golden Triangle" ),
                     new GridModeItem(GridType.GoldenDiagonal, "Golden Diagonal" ),
                     new GridModeItem(GridType.FibonacciRectangles, "Fibonacci Rectangles"),
-                    // TODO: new GridModeItem(GridType.GoldenSpiral, "Golden Spiral"),
+                    new GridModeItem(GridType.GoldenSpiral, "Golden Spiral"),
                 };
             }
         }

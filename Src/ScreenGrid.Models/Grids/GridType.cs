@@ -28,6 +28,8 @@
 
         FibonacciRectangles,
 
-        // TODO: GoldenSpiral,
+        GoldenSpiral,
+
+        // TODO: Implement normal (golden ratio) / stretched to window grids
     }
 }

@@ -73,11 +73,14 @@
 
         /// <summary>
         /// Creates list of lines, which forms the selected grid type
+        /// X axis is directed from left to right
+        /// Y axis is directed from top to bottom
+        /// Coordinates are in normalized range [0..1]
         /// </summary>
         /// <param name="gridType">Selected type of grid</param>
         /// <param name="width">Width of output image</param>
         /// <param name="height">Height of output image</param>
-        /// <returns>List of lines; points coordinates are in normalized range [0..1]</returns>
+        /// <returns>List of lines</returns>
         public static IEnumerable<Line> CreateGrid(GridType gridType, double width, double height)
         {
             switch (gridType)
@@ -208,6 +211,7 @@
                                     break;
                             }
 
+                            // TODO: create precalculated (Lazy) array of Fibonnacci numbers
                             // Update current fibonacci number
                             {
                                 var temp = current;
@@ -216,74 +220,111 @@
                             }
                         }
 
-                        // Scale and auto-fit (stretch all lines to 0..1 output range)
-                        var scaleX = 1.0 / ((double)(right - left));
-                        var scaleY = 1.0 / ((double)(bottom - top));
-                        var offsetX = left;
-                        var offsetY = top;
-
-                        lines = lines.Select(r => new Line(
-                            new Point((r.p1.X - offsetX) * scaleX, (r.p1.Y - offsetY) * scaleY),
-                            new Point((r.p2.X - offsetX) * scaleX, (r.p2.Y - offsetY) * scaleY)))
-                            .ToList();
+                        lines = StretchToUniformRectangle(lines, left, top, right, bottom);
 
                         return lines;
                     }
 
-                ////case GridType.GoldenSpiral:
-                ////    {
-                ////        // https://en.wikipedia.org/wiki/Golden_spiral
-                ////        // http://csharphelper.com/blog/2012/05/draw-a-phi-spiral-or-golden-spiral-in-c/
+                case GridType.GoldenSpiral:
+                    {
+                        // https://en.wikipedia.org/wiki/Golden_spiral
+                        // http://csharphelper.com/blog/2012/05/draw-a-phi-spiral-or-golden-spiral-in-c/
 
-                ////        var res = new List<Line>();
+                        // TODO: Simplify code (use some pre-calculations and common functions)
+                        var points = new List<Point>();
 
-                ////        // TODO: better algorithm
-                ////        var points = new List<Point>();
+                        const double CenterX = 0.5;
+                        const double CenterY = 0.5;
+                        var minX = CenterX;
+                        var minY = CenterY;
+                        var maxX = CenterX;
+                        var maxY = CenterY;
 
-                ////        for (var theta = 0.0; theta < 3.0 * 2.0 * Math.PI; theta += 0.05 * Math.PI)
-                ////        {
-                ////            var r = 0.001 * Math.Pow(RatioConstants.GoldenSpiralCInRadians, theta);
+                        const int NumberOfTurns = 3;
+                        const double FullTurn = 2.0 * Math.PI;
+                        const double MaxAngle = ((double)NumberOfTurns) * FullTurn;
 
-                ////            var x = 0.5 + r * Math.Cos(theta);
-                ////            var y = 0.5 + r * Math.Sin(theta);
-                ////            points.Add(new Point(x, y));
-                ////        }
+                        for (var theta = 0.0; theta < MaxAngle; )
+                        {
+                            var r = Math.Pow(RatioConstants.GoldenSpiralCInRadians, theta);
 
-                        ////const int num_slices = 1000;
+                            var x = CenterX + r * Math.Cos(theta);
+                            var y = 1.0 - (CenterY + r * Math.Sin(theta)); // Flip Y axis
 
-                        ////var start = new Point(0, 1);
-                        ////var origin = new Point(0.5, 0.5);
-                        ////var dx = start.X - origin.X;
-                        ////var dy = start.Y - origin.Y;
-                        ////var radius = Math.Sqrt(dx * dx + dy * dy);
-                        ////var theta = Math.Atan2(dy, dx);
+                            points.Add(new Point(x, y));
 
-                        ////var dtheta = Math.PI / 2.0 / num_slices;
-                        ////var factor = 1 - (1 / RatioConstants.Phi) / num_slices * 0.78;
+                            minX = Math.Min(minX, x);
+                            minY = Math.Min(minY, y);
+                            maxX = Math.Max(maxX, x);
+                            maxY = Math.Max(maxY, y);
 
-                        ////// Repeat until dist is too small to see.
-                        ////while (radius > 0.01)
-                        ////{
-                        ////    points.Add(new Point(
-                        ////        (origin.X + radius * Math.Cos(theta)),
-                        ////        (origin.Y + radius * Math.Sin(theta))));
+                            // variable step for optimization
+                            var turnNumber = theta / FullTurn;
+                            var step = 0.005 * 5.0 * ((double)NumberOfTurns) / (turnNumber + 1.0) * FullTurn;
+                            theta += step;
+                        }
 
-                        ////    theta += dtheta;
-                        ////    radius *= factor;
-                        ////}
+                        // Add some points after main turns to finish spiral (inscribe to rectangle)
+                        var lastY = minY;
+                        for (var theta = MaxAngle; ; theta += 0.001 * FullTurn)
+                        {
+                            var r = Math.Pow(RatioConstants.GoldenSpiralCInRadians, theta);
 
-                    ////    for (var i = 1; i < points.Count; i++)
-                    ////    {
-                    ////        res.Add(new Line(points[i - 1], points[i]));
-                    ////    }
+                            var x = CenterX + r * Math.Cos(theta);
+                            var y = 1.0 - (CenterY + r * Math.Sin(theta)); // Flip Y axis
 
-                    ////    return res;
-                    ////}
+                            points.Add(new Point(x, y));
+
+                            minX = Math.Min(minX, x);
+                            minY = Math.Min(minY, y);
+                            maxX = Math.Max(maxX, x);
+                            maxY = Math.Max(maxY, y);
+
+                            if (y <= lastY)
+                            {
+                                // TODO: Correct last point (clip to bounds)
+                                break;
+                            }
+                        }
+
+                        var lines = new List<Line>();
+                        for (var i = 1; i < points.Count; i++)
+                        {
+                            lines.Add(new Line(points[i - 1], points[i]));
+                        }
+
+                        lines = StretchToUniformRectangle(lines, minX, minY, maxX, maxY);
+
+                        return lines;
+                    }
                 default:
                     {
                         throw new ArgumentException(gridType.ToString());
                     }
             }
+        }
+
+        /// <summary>
+        /// Scale and auto-fit (stretch all lines to 0..1 output range) set of lines
+        /// Min/max values passed as precalculated parameters for optimization
+        /// </summary>
+        /// <param name="lines">List of lines to stretch</param>
+        /// <param name="minX">Minimum X of points of lines</param>
+        /// <param name="minY">Minimum Y of points of lines</param>
+        /// <param name="maxX">Maximum X of points of lines</param>
+        /// <param name="maxY">Maximum Y of points of lines</param>
+        /// <returns></returns>
+        private static List<Line> StretchToUniformRectangle(IEnumerable<Line> lines, double minX, double minY, double maxX, double maxY)
+        {
+            var scaleX = 1.0 / (maxX - minX);
+            var scaleY = 1.0 / (maxY - minY);
+            var offsetX = minX;
+            var offsetY = minY;
+
+            return lines.Select(r => new Line(
+                     new Point((r.p1.X - offsetX) * scaleX, (r.p1.Y - offsetY) * scaleY),
+                     new Point((r.p2.X - offsetX) * scaleX, (r.p2.Y - offsetY) * scaleY)))
+                    .ToList();
         }
 
         private static IList<Line> CreateRectangle(int left, int right, int top, int bottom)
