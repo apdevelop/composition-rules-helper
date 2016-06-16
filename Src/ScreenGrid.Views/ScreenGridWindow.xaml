@@ -97,6 +97,7 @@
                 <ComboBox   HorizontalAlignment="Left" VerticalAlignment="Center"
                             Width="85" Height="20"
                             FontSize="10"
+                            ToolTip="Grid lines color"
                             ItemsSource="{Binding LineColors, Mode=OneTime}"
                             SelectedItem="{Binding SelectedLineColor, Mode=TwoWay}">
                             <ComboBox.ItemTemplate>

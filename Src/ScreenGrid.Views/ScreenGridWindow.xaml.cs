@@ -8,16 +8,10 @@
     public partial class ScreenGridWindow : Window
     {
         // TODO: Better separation of concerns (MVVM pattern)
-
-        // TODO: Fix 'Golden Spiral' grid
-        // TODO: Disable rotate/flip buttons depends on grid type
-
-        // TODO: Find corners by colors change in uniform color
-        // TODO: 'Auto-snap' option on/off
+        // TODO: Disable rotate/flip buttons depending on grid type
         // TODO: Move window by cursor keys
         // TODO: Remove image files from resources
-
-        // TODO: show checkboxes in menu items
+        // TODO: Resize window using sides handles
 
         public ScreenGridWindow()
         {
@@ -32,20 +26,20 @@
             this.DataContext = this.vm;
         }
 
-        private ContextMenu cntxMenu;
+        private ContextMenu mainMenu;
 
         private ViewModels.ScreenGridViewModel vm;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.cntxMenu = CreateContextMenu();
+            this.CreateContextMenu();
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Right)
             {
-                this.cntxMenu.IsOpen = true;
+                this.mainMenu.IsOpen = true;
             }
             else if (e.ChangedButton == MouseButton.Left)
             {
@@ -54,32 +48,47 @@
             }
         }
 
-        private ContextMenu CreateContextMenu()
+        private void CreateContextMenu()
         {
-            var cntMenu = new ContextMenu();
+            // TODO: use bindings to command with parameter
+            this.mainMenu = new ContextMenu();
 
             foreach (var gr in Models.Grids.GridModeItem.List)
             {
-                var menuItem = new MenuItem() { Header = gr.Title, Tag = gr.GridMode, };
+                var menuItem = new MenuItem
+                {
+                    Header = gr.Title,
+                    Tag = gr.GridMode,
+                };
+
                 menuItem.Click += (s, e) =>
                 {
+                    // Uncheck all others
+                    foreach (var item in this.mainMenu.Items)
+                    {
+                        var mi = item as MenuItem;
+                        if ((mi != null) && (mi.Tag != null))
+                        {
+                            mi.IsChecked = false;
+                        }
+                    }
+
+                    menuItem.IsChecked = true;
                     this.vm.GridMode = (Models.Grids.GridType)((s as MenuItem).Tag);
                 };
 
-                cntMenu.Items.Add(menuItem);
+                this.mainMenu.Items.Add(menuItem);
             }
 
-            cntMenu.Items.Add(new Separator());
+            this.mainMenu.Items.Add(new Separator());
 
             var itMinimize = new MenuItem { Header = "Minimize" };
             itMinimize.Click += this.btnMinimize_Click;
-            cntMenu.Items.Add(itMinimize);
+            this.mainMenu.Items.Add(itMinimize);
 
             var itClose = new MenuItem { Header = "Close" };
             itClose.Click += this.btnClose_Click;
-            cntMenu.Items.Add(itClose);
-
-            return cntMenu;
+            this.mainMenu.Items.Add(itClose);
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -94,7 +103,7 @@
 
         private void btnMenu_Click(object sender, RoutedEventArgs e)
         {
-            this.cntxMenu.IsOpen = true;
+            this.mainMenu.IsOpen = true;
         }
 
         // TODO: public method
