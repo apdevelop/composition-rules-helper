@@ -2,10 +2,18 @@
 {
     public enum GridType
     {
+        /// <summary>
+        /// No grid is displayed
+        /// </summary>
         None,
 
         /// <summary>
-        /// Rule of Thirds
+        /// Simple crosshair
+        /// </summary>
+        Crosshair,
+
+        /// <summary>
+        /// Rule of Thirds simple grid
         /// </summary>
         Thirds,
 
@@ -17,6 +25,9 @@
         /// </summary>
         DiagonalOfThirds,
 
+        /// <summary>
+        /// Golden Ratio simple grid
+        /// </summary>
         GoldenRatio,
 
         /// <summary>
@@ -24,12 +35,34 @@
         /// </summary>
         GoldenTriangle,
 
-        GoldenDiagonal,
+        /// <summary>
+        /// Main diagonal with two additional diagonals to Golden Ratio points (Type 1)
+        /// </summary>
+        GoldenDiagonal1,
 
-        FibonacciRectangles,
+        /// <summary>
+        /// Main diagonal with two additional diagonals to Golden Ratio points (Type 2)
+        /// </summary
+        GoldenDiagonal2,
 
-        GoldenSpiral,
+        /// <summary>
+        /// Sequence of Fibonacci Rectangles
+        /// </summary>
+        FibonacciRectanglesZoomed,
 
-        // TODO: Implement normal (golden ratio) / stretched to window grids
+        /// <summary>
+        /// Sequence of Fibonacci Rectangles (stretched to area extents)
+        /// </summary>
+        FibonacciRectanglesStretched,
+
+        /// <summary>
+        /// Golden Spiral
+        /// </summary>
+        GoldenSpiralZoomed,
+
+        /// <summary>
+        /// Golden Spiral (stretched to area extents)
+        /// </summary>
+        GoldenSpiralStretched,
     }
 }

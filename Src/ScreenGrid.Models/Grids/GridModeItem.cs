@@ -37,13 +37,17 @@
             {
                 return new[]
                 {
+                    new GridModeItem(GridType.Crosshair, "Crosshair"),
                     new GridModeItem(GridType.Thirds, "Thirds"),
-                    new GridModeItem(GridType.DiagonalOfThirds,"Diagonal of Thirds" ),
-                    new GridModeItem(GridType.GoldenRatio, "Golden Ratio" ),
-                    new GridModeItem(GridType.GoldenTriangle, "Golden Triangle" ),
-                    new GridModeItem(GridType.GoldenDiagonal, "Golden Diagonal" ),
-                    new GridModeItem(GridType.FibonacciRectangles, "Fibonacci Rectangles"),
-                    new GridModeItem(GridType.GoldenSpiral, "Golden Spiral"),
+                    new GridModeItem(GridType.GoldenRatio, "Golden Ratio"),
+                    new GridModeItem(GridType.DiagonalOfThirds,"Diagonal of Thirds"),
+                    new GridModeItem(GridType.GoldenTriangle, "Golden Triangle"),
+                    new GridModeItem(GridType.GoldenDiagonal1, "Golden Diagonal 1"),
+                    new GridModeItem(GridType.GoldenDiagonal2, "Golden Diagonal 2"),
+                    new GridModeItem(GridType.FibonacciRectanglesZoomed, "Fibonacci Rectangles"),
+                    new GridModeItem(GridType.GoldenSpiralZoomed, "Golden Spiral"),
+                    new GridModeItem(GridType.FibonacciRectanglesStretched, "Fibonacci Rectangles (stretched)"),
+                    new GridModeItem(GridType.GoldenSpiralStretched, "Golden Spiral (stretched)"),
                 };
             }
         }
