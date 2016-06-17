@@ -1,5 +1,6 @@
 ﻿namespace ScreenGrid.ViewModels
 {
+    using System;
     using System.Linq;
     using System.Windows.Media;
 
@@ -41,6 +42,26 @@
             var colorProperty = typeof(Colors).GetProperties()
                 .FirstOrDefault(p => (Color)p.GetValue(null, null) == color);
             return colorProperty != null ? colorProperty.Name : "???";
+        }
+
+        public override bool Equals(Object obj)
+        {
+            return ((obj is ColorItemViewModel) && (this == (ColorItemViewModel)obj));
+        }
+
+        public override int GetHashCode()
+        {
+            return this.color.GetHashCode();
+        }
+
+        public static bool operator ==(ColorItemViewModel a, ColorItemViewModel b)
+        {
+            return (a.Color == b.Color);
+        }
+
+        public static bool operator !=(ColorItemViewModel a, ColorItemViewModel b)
+        {
+            return (!(a == b));
         }
     }
 }
