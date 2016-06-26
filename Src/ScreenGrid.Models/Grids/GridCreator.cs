@@ -80,8 +80,9 @@
         /// <param name="gridType">Selected type of grid</param>
         /// <param name="width">Width of output image</param>
         /// <param name="height">Height of output image</param>
+        /// <param name="isRotated">Output grid is rotated (width swapped with height)</param>
         /// <returns>List of lines</returns>
-        public static IEnumerable<Line> CreateGrid(GridType gridType, double width, double height)
+        public static IEnumerable<Line> CreateGrid(GridType gridType, double width, double height, bool isRotated)
         {
             switch (gridType)
             {
@@ -256,7 +257,8 @@
 
                         if (gridType == GridType.FibonacciRectanglesZoomed)
                         {
-                            lines = StretchToRectangleWithAspectRatio(lines, width, height, left, right, top, bottom);
+                            var aspect = (isRotated) ? (height / width) : (width / height);
+                            lines = StretchToRectangleWithAspectRatio(lines, aspect, left, right, top, bottom);
                         }
                         else if (gridType == GridType.FibonacciRectanglesStretched)
                         {
@@ -341,11 +343,11 @@
 
                         if (gridType == GridType.GoldenSpiralZoomed)
                         {
-                            lines = StretchToRectangleWithAspectRatio(lines, width, height, minX, maxX, minY, maxY);
+                            var aspect = (isRotated) ? (height / width) : (width / height);
+                            lines = StretchToRectangleWithAspectRatio(lines, aspect, minX, maxX, minY, maxY);
 
                             // Adding extents lines
                             var extents = GetExtents(lines);
-                            var aspect = (width / height);
                             if (aspect < RatioConstants.Phi)
                             {
                                 lines.Add(new Line(RatioConstants.Zero, extents.Top, RatioConstants.One, extents.Top));
@@ -375,10 +377,8 @@
             }
         }
 
-        private static List<Line> StretchToRectangleWithAspectRatio(List<Line> lines, double width, double height, double left, double right, double top, double bottom)
+        private static List<Line> StretchToRectangleWithAspectRatio(List<Line> lines, double aspect, double left, double right, double top, double bottom)
         {
-            var aspect = (width / height);
-
             if (aspect < RatioConstants.Phi)
             {
                 lines = StretchToRectangle(1.0, (RatioConstants.Phi - 1.0) * aspect, lines, left, top, right, bottom);
