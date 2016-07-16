@@ -79,6 +79,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\UpperLeftCorner.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LowerRightCorner2.png" />
+    <EmbeddedResource Include="Resources\UpperLeftCorner2.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath)  $(SolutionDir)..\Dist\</PostBuildEvent>

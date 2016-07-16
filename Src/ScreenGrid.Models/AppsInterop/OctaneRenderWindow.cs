@@ -43,11 +43,7 @@
         {
             get
             {
-                var imageData = ReadResourceFile("ScreenGrid.Models.Resources.UpperLeftCorner.png");
-                using (var ms = new System.IO.MemoryStream(imageData))
-                {
-                    return new Bitmap(ms);
-                }
+                return ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner.png");
             }
         }
 
@@ -55,29 +51,57 @@
         {
             get
             {
-                var imageData = ReadResourceFile("ScreenGrid.Models.Resources.LowerRightCorner.png");
-                using (var ms = new System.IO.MemoryStream(imageData))
-                {
-                    return new Bitmap(ms);
-                }
+                return ReadPngResouse("ScreenGrid.Models.Resources.LowerRightCorner.png");
+            }
+        }
+
+        private static Bitmap UpperLeftCorner2
+        {
+            get
+            {
+                return ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner2.png");
+            }
+        }
+
+        private static Bitmap LowerRightCorner2
+        {
+            get
+            {
+                return ReadPngResouse("ScreenGrid.Models.Resources.LowerRightCorner2.png");
+            }
+        }
+
+        private static Bitmap ReadPngResouse(string resourceName)
+        {
+            var imageData = ReadResourceFile(resourceName);
+            using (var ms = new System.IO.MemoryStream(imageData))
+            {
+                return new Bitmap(ms);
             }
         }
 
         private static Point TopLeftCorner(FlatImage image)
         {
-            var topLeftCornerFragment = new FlatImage(OctaneRenderWindow.UpperLeftCorner);
+            var topLeftCornerFragments = new[]
+            {
+                new FlatImage(OctaneRenderWindow.UpperLeftCorner),
+                new FlatImage(OctaneRenderWindow.UpperLeftCorner2),
+            };
 
             var topLeftCornerX = 0;
             var topLeftCornerY = 0;
-            for (var x = 0; x < image.Width - topLeftCornerFragment.Width; x++)
+            foreach (var topLeftCornerFragment in topLeftCornerFragments)
             {
-                for (var y = 0; y < image.Height - topLeftCornerFragment.Height; y++)
+                for (var x = 0; x < image.Width - topLeftCornerFragment.Width; x++)
                 {
-                    if (image.CompareWithFragmentWithTolerance(topLeftCornerFragment, x, y))
+                    for (var y = 0; y < image.Height - topLeftCornerFragment.Height; y++)
                     {
-                        topLeftCornerX = x + topLeftCornerFragment.Width - 1;
-                        topLeftCornerY = y + topLeftCornerFragment.Height - 1;
-                        return new Point(topLeftCornerX, topLeftCornerY);
+                        if (image.CompareWithFragmentWithTolerance(topLeftCornerFragment, x, y))
+                        {
+                            topLeftCornerX = x + topLeftCornerFragment.Width - 1;
+                            topLeftCornerY = y + topLeftCornerFragment.Height - 1;
+                            return new Point(topLeftCornerX, topLeftCornerY);
+                        }
                     }
                 }
             }
@@ -87,19 +111,27 @@
 
         private static Point BottomRightCorner(FlatImage image)
         {
-            var bottomRightCornerFragment = new FlatImage(OctaneRenderWindow.LowerRightCorner);
+            var bottomRightCornerFragments = new[]
+            {
+                new FlatImage(OctaneRenderWindow.LowerRightCorner),
+                new FlatImage(OctaneRenderWindow.LowerRightCorner2),
+            };
 
             var bottomRightCornerX = 0;
             var bottomRightCornerY = 0;
-            for (var x = 0; x < image.Width - bottomRightCornerFragment.Width; x++)
+            foreach (var bottomRightCornerFragment in bottomRightCornerFragments)
             {
-                for (var y = 0; y < image.Height - bottomRightCornerFragment.Height; y++)
+                //for (var x = 0; x < image.Width - bottomRightCornerFragment.Width; x++)
+                for (var x = image.Width - bottomRightCornerFragment.Width - 1; x > 0; x--)
                 {
-                    if (image.CompareWithFragmentWithTolerance(bottomRightCornerFragment, x, y))
+                    for (var y = 0; y < image.Height - bottomRightCornerFragment.Height; y++)
                     {
-                        bottomRightCornerX = x;
-                        bottomRightCornerY = y;
-                        return new Point(bottomRightCornerX, bottomRightCornerY);
+                        if (image.CompareWithFragmentWithTolerance(bottomRightCornerFragment, x, y))
+                        {
+                            bottomRightCornerX = x;
+                            bottomRightCornerY = y;
+                            return new Point(bottomRightCornerX, bottomRightCornerY);
+                        }
                     }
                 }
             }
@@ -116,8 +148,6 @@
         /// <returns></returns>
         private static Point TopLeftImage(FlatImage image, Point topLeftCorner, Point bottomRightCorner)
         {
-            var topLeftCornerFragment = new FlatImage(OctaneRenderWindow.UpperLeftCorner);
-
             var topLeftImageX = 0;
             var topLeftImageY = 0;
 
@@ -154,8 +184,6 @@
         /// <returns></returns>
         private static Point BottomRightImage(FlatImage image, Point topLeftCorner, Point bottomRightCorner)
         {
-            var bottomRightCornerFragment = new FlatImage(OctaneRenderWindow.LowerRightCorner);
-
             var areaColor2 = image.pixels[(int)bottomRightCorner.X, (int)bottomRightCorner.Y];
 
             for (var y = (int)bottomRightCorner.Y - 1; y > (int)topLeftCorner.Y; y--)
