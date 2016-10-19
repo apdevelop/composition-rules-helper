@@ -64,5 +64,32 @@
         /// Golden Spiral (stretched to area extents)
         /// </summary>
         GoldenSpiralStretched,
+
+        /// <summary>
+        /// 1.5 Rectangle
+        /// </summary>
+        // TODO: OneDotFiveRectangle,
+
+        /// <summary>
+        /// Golden rectangle or Auron (1:φ)
+        /// </summary>
+        GoldenRectangle,
+        
+        /// <summary>
+        /// Root-Phi or Penton (1:√φ)
+        /// </summary>
+        // TODO: RootPhiRectangle,
+
+        /// <summary>
+        /// Root-2 or Diagon (1:√2)
+        /// </summary>
+        Root2Rectangle,
+
+
+        Root3Rectangle,
+
+        Root4Rectangle,
+
+        Root5Rectangle,
     }
 }

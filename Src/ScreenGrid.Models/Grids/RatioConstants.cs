@@ -25,6 +25,16 @@
 
         public static readonly double OneSixth = 1.0 / 6.0;
 
+        public static readonly double RootPhi = Math.Sqrt(Phi);
+
+        public static readonly double Root2 = Math.Sqrt(2.0);
+
+        public static readonly double Root3 = Math.Sqrt(3.0);
+
+        public static readonly double Root4 = Math.Sqrt(4.0);
+
+        public static readonly double Root5 = Math.Sqrt(5.0);
+
         /// <summary>
         /// 1.358456
         /// </summary>

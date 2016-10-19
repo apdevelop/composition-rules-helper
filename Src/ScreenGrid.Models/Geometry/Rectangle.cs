@@ -59,6 +59,22 @@
             }
         }
 
+        public double CenterX
+        {
+            get
+            {
+                return this.X + this.Width / 2.0;
+            }
+        }
+
+        public double CenterY
+        {
+            get
+            {
+                return this.Y + this.Height / 2.0;
+            }
+        }
+
         public bool IsEmpty
         {
             get
