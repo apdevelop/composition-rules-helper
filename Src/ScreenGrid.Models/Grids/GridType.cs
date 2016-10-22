@@ -78,7 +78,7 @@
         /// <summary>
         /// Root-Phi or Penton (1:√φ)
         /// </summary>
-        // TODO: RootPhiRectangle,
+        RootPhiRectangle,
 
         /// <summary>
         /// Root-2 or Diagon (1:√2)

@@ -415,12 +415,29 @@
 
                         return lines;
                     }
-                ////case GridType.RootPhiRectangle:
-                ////    {
-                ////        var rectangle = CalculateDynamicRectangleExtents(RatioConstants.RootPhi / RatioConstants.One, actualAspectRatio);
-                ////        // TODO: armature
-                ////        return CreateRootNRectangle(rectangle);
-                ////    }
+                case GridType.RootPhiRectangle:
+                    {
+                        var rectangle = CalculateDynamicRectangleExtents(RatioConstants.RootPhi / RatioConstants.One, actualAspectRatio);
+                        var lines = CreateRectangleWithMainDiagonals(rectangle);
+
+                        var w = rectangle.Width / (RatioConstants.RootPhi * RatioConstants.RootPhi);
+                        var h = rectangle.Height / (RatioConstants.RootPhi * RatioConstants.RootPhi);
+                        
+                        lines.Add(new Line(rectangle.Left + w, rectangle.Top, rectangle.Left + w, rectangle.Bottom));
+                        lines.Add(new Line(rectangle.Right - w, rectangle.Top, rectangle.Right - w, rectangle.Bottom));
+                        lines.Add(new Line(rectangle.Left, rectangle.Top + h, rectangle.Right, rectangle.Top + h));
+                        lines.Add(new Line(rectangle.Left, rectangle.Bottom - h, rectangle.Right, rectangle.Bottom - h));
+
+                        // Left
+                        lines.Add(new Line(rectangle.Left, rectangle.Top, rectangle.Left + w, rectangle.Bottom));
+                        lines.Add(new Line(rectangle.Left, rectangle.Bottom, rectangle.Left + w, rectangle.Top));
+
+                        // Right
+                        lines.Add(new Line(rectangle.Right, rectangle.Top, rectangle.Right - w, rectangle.Bottom));
+                        lines.Add(new Line(rectangle.Right, rectangle.Bottom, rectangle.Right - w, rectangle.Top));
+
+                        return lines;
+                    }
                 case GridType.Root2Rectangle:
                     {
                         var rectangle = CalculateDynamicRectangleExtents(RatioConstants.Root2 / RatioConstants.One, actualAspectRatio);
