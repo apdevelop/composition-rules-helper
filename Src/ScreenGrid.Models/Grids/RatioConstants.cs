@@ -8,6 +8,10 @@
 
         public static readonly double One = 1.0;
 
+        public static readonly double Two = 2.0;
+
+        public static readonly double Three = 3.0;
+
         /// <summary>
         /// 1.618
         /// </summary>
@@ -24,6 +28,11 @@
         public static readonly double TwoThirds = 2.0 / 3.0;
 
         public static readonly double OneSixth = 1.0 / 6.0;
+
+        /// <summary>
+        /// 1.5
+        /// </summary>
+        public static readonly double OneDotFive = RatioConstants.Three / RatioConstants.Two;
 
         public static readonly double RootPhi = Math.Sqrt(Phi);
 

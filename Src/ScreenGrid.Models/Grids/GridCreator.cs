@@ -372,17 +372,32 @@
 
                         return lines;
                     }
-                ////case GridType.OneDotFiveRectangle:
-                ////    {
-                ////        var rectangle = CalculateDynamicRectangleExtents(1.5 / RatioConstants.One, actualAspectRatio);
-                ////        var lines = CreateRootNRectangle(rectangle);
-                ////        // TODO: armature
-                ////        return lines;
-                ////    }
+                case GridType.OneDotFiveRectangle:
+                    {
+                        var rectangle = CalculateDynamicRectangleExtents(RatioConstants.OneDotFive, actualAspectRatio);
+                        var lines = CreateRectangleWithMainDiagonals(rectangle);
+
+                        var w = rectangle.Width / (RatioConstants.OneDotFive * RatioConstants.OneDotFive);
+                        var h = rectangle.Height / (RatioConstants.OneDotFive * RatioConstants.OneDotFive);
+                        lines.Add(new Line(rectangle.Left + w, rectangle.Top, rectangle.Left + w, rectangle.Bottom));
+                        lines.Add(new Line(rectangle.Right - w, rectangle.Top, rectangle.Right - w, rectangle.Bottom));
+                        lines.Add(new Line(rectangle.Left, rectangle.Top + h, rectangle.Right, rectangle.Top + h));
+                        lines.Add(new Line(rectangle.Left, rectangle.Bottom - h, rectangle.Right, rectangle.Bottom - h));
+
+                        // Left
+                        lines.Add(new Line(rectangle.Left, rectangle.Top, rectangle.Left + w, rectangle.Bottom));
+                        lines.Add(new Line(rectangle.Left, rectangle.Bottom, rectangle.Left + w, rectangle.Top));
+
+                        // Right
+                        lines.Add(new Line(rectangle.Right, rectangle.Top, rectangle.Right - w, rectangle.Bottom));
+                        lines.Add(new Line(rectangle.Right, rectangle.Bottom, rectangle.Right - w, rectangle.Top));
+
+                        return lines;
+                    }
                 case GridType.GoldenRectangle:
                     {
                         var rectangle = CalculateDynamicRectangleExtents(RatioConstants.Phi / RatioConstants.One, actualAspectRatio);
-                        var lines = CreateRootNRectangle(rectangle);
+                        var lines = CreateRectangleWithMainDiagonals(rectangle);
 
                         var w = rectangle.Width * RatioConstants.Phi3D8;
                         var h = rectangle.Height * RatioConstants.Phi3D8;
@@ -409,7 +424,7 @@
                 case GridType.Root2Rectangle:
                     {
                         var rectangle = CalculateDynamicRectangleExtents(RatioConstants.Root2 / RatioConstants.One, actualAspectRatio);
-                        var lines = CreateRootNRectangle(rectangle);
+                        var lines = CreateRectangleWithMainDiagonals(rectangle);
                         lines.Add(new Line(rectangle.Left, RatioConstants.Half, rectangle.Right, RatioConstants.Half));
                         lines.Add(new Line(RatioConstants.Half, rectangle.Top, RatioConstants.Half, rectangle.Bottom));
                         lines.Add(new Line(rectangle.Left, rectangle.Bottom, RatioConstants.Half, rectangle.Top));
@@ -421,7 +436,7 @@
                 case GridType.Root3Rectangle:
                     {
                         var rectangle = CalculateDynamicRectangleExtents(RatioConstants.Root3 / RatioConstants.One, actualAspectRatio);
-                        var lines = CreateRootNRectangle(rectangle);
+                        var lines = CreateRectangleWithMainDiagonals(rectangle);
                         lines.AddRange(CreateRegularLines(rectangle, 2));
                         var w = rectangle.Width / 3.0;
                         // Left
@@ -433,13 +448,13 @@
                         // Two horizontals
                         var h = rectangle.Height / 3.0;
                         lines.Add(new Line(rectangle.Left, rectangle.Top + h, rectangle.Right, rectangle.Top + h));
-                        lines.Add(new Line(rectangle.Left, rectangle.Bottom - h, rectangle.Right, rectangle.Bottom - h)); 
+                        lines.Add(new Line(rectangle.Left, rectangle.Bottom - h, rectangle.Right, rectangle.Bottom - h));
                         return lines;
                     }
                 case GridType.Root4Rectangle:
                     {
                         var rectangle = CalculateDynamicRectangleExtents(RatioConstants.Root4 / RatioConstants.One, actualAspectRatio);
-                        var lines = CreateRootNRectangle(rectangle);
+                        var lines = CreateRectangleWithMainDiagonals(rectangle);
                         lines.AddRange(CreateRegularLines(rectangle, 3));
                         var w = rectangle.Width / 4.0;
                         // Left
@@ -456,14 +471,14 @@
                         // Two horizontals
                         var h = rectangle.Height / 4.0;
                         lines.Add(new Line(rectangle.Left, rectangle.Top + h, rectangle.Right, rectangle.Top + h));
-                        lines.Add(new Line(rectangle.Left, rectangle.Bottom - h, rectangle.Right, rectangle.Bottom - h)); 
+                        lines.Add(new Line(rectangle.Left, rectangle.Bottom - h, rectangle.Right, rectangle.Bottom - h));
 
                         return lines;
                     }
                 case GridType.Root5Rectangle:
                     {
                         var rectangle = CalculateDynamicRectangleExtents(RatioConstants.Root5 / RatioConstants.One, actualAspectRatio);
-                        var lines = CreateRootNRectangle(rectangle);
+                        var lines = CreateRectangleWithMainDiagonals(rectangle);
                         lines.AddRange(CreateRegularLines(rectangle, 4));
                         var w = rectangle.Width / 5.0;
                         // Left
@@ -515,7 +530,7 @@
             return new Rectangle { X = left, Y = top, Width = right - left, Height = bottom - top };
         }
 
-        private static List<Line> CreateRootNRectangle(Rectangle rectangle)
+        private static List<Line> CreateRectangleWithMainDiagonals(Rectangle rectangle)
         {
             double left, right, top, bottom;
             left = rectangle.Left;
@@ -525,12 +540,13 @@
 
             var lines = new List<Line>();
 
+            // Four contour lines
             lines.Add(new Line(left, top, left, bottom));
             lines.Add(new Line(right, top, right, bottom));
             lines.Add(new Line(left, top, right, top));
             lines.Add(new Line(left, bottom, right, bottom));
 
-            // Main diagonals
+            // Two main diagonals
             lines.Add(new Line(left, top, right, bottom));
             lines.Add(new Line(left, bottom, right, top));
 

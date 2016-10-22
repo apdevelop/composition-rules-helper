@@ -48,7 +48,7 @@
                     new GridModeItem(GridType.GoldenSpiralZoomed, "Golden Spiral"),
                     new GridModeItem(GridType.FibonacciRectanglesStretched, "Fibonacci Rectangles (stretched)"),
                     new GridModeItem(GridType.GoldenSpiralStretched, "Golden Spiral (stretched)"),
-                    // TODO: new GridModeItem(GridType.OneDotFiveRectangle, "1.5 Rectangle"),
+                    new GridModeItem(GridType.OneDotFiveRectangle, "1.5 Rectangle"),
                     new GridModeItem(GridType.GoldenRectangle, "Golden (Phi) Rectangle"),
                     // TODO: new GridModeItem(GridType.RootPhiRectangle, "Root-Phi Rectangle"),
                     new GridModeItem(GridType.Root2Rectangle, "Root-2 Rectangle"),
