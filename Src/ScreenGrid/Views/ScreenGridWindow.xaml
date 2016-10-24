@@ -20,7 +20,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/ScreenGrid.Views;component/Assets/PathData.xaml" />
+                <ResourceDictionary Source="Assets/PathData.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>

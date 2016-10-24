@@ -1,5 +1,4 @@
-Dist/*.dll
-Dist/*.exe
+Dist
 
 Src/*.suo
 Src/**/[Bb]in/

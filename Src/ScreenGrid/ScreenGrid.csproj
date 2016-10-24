@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -38,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -57,6 +59,35 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\AppsInterop\NativeWindow.cs" />
+    <Compile Include="Models\AppsInterop\OctaneRenderWindow.cs" />
+    <Compile Include="Models\AppsInterop\PhotoViewerWindow.cs" />
+    <Compile Include="Models\AspectRatioDetector.cs" />
+    <Compile Include="Models\FlatImage.cs" />
+    <Compile Include="Models\Geometry\Line.cs" />
+    <Compile Include="Models\Geometry\Point.cs" />
+    <Compile Include="Models\Geometry\Rectangle.cs" />
+    <Compile Include="Models\Geometry\Utils.cs" />
+    <Compile Include="Models\Grids\GridCreator.cs" />
+    <Compile Include="Models\Grids\GridModeItem.cs" />
+    <Compile Include="Models\Grids\GridType.cs" />
+    <Compile Include="Models\Grids\Orientation.cs" />
+    <Compile Include="Models\Grids\RatioConstants.cs" />
+    <Compile Include="Models\Grids\Rotation.cs" />
+    <Compile Include="Models\Grids\Rotator.cs" />
+    <Compile Include="Models\IntegerSegment.cs" />
+    <Compile Include="Models\IntegerSegmentUtils.cs" />
+    <Compile Include="ViewModels\ColorItemViewModel.cs" />
+    <Compile Include="ViewModels\ScreenGridViewModel.cs" />
+    <Compile Include="ViewModels\Utils\BaseNotifyPropertyChanged.cs" />
+    <Compile Include="ViewModels\Utils\RelayCommand.cs" />
+    <Compile Include="Views\ScreenGridWindow.xaml.cs">
+      <DependentUpon>ScreenGridWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WinApiInterop\GetWindowCommand.cs" />
+    <Compile Include="WinApiInterop\NativeMethods.cs" />
+    <Compile Include="WinApiInterop\RECT.cs" />
+    <Compile Include="WinApiInterop\WindowStyle.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -84,14 +115,33 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ScreenGrid.Views\ScreenGrid.Views.csproj">
-      <Project>{C33F1D11-364A-4AA0-B6C6-AFD348477AFB}</Project>
-      <Name>ScreenGrid.Views</Name>
-    </ProjectReference>
+    <Resource Include="Models\Resources\LowerRightCorner.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Models\Resources\LowerRightCorner2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Models\Resources\UpperLeftCorner.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Models\Resources\UpperLeftCorner2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Views\Assets\PathData.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Views\ScreenGridWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath)  $(SolutionDir)..\Dist\</PostBuildEvent>
+    <PostBuildEvent>mkdir                         $(SolutionDir)..\Dist\
+copy $(TargetPath)  $(SolutionDir)..\Dist\</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
