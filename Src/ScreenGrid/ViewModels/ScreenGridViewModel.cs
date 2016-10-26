@@ -176,7 +176,8 @@
         #region Window position and size
 
         private const double OuterBorderWidth = 1.0;
-        private const double HeaderHeight = 24.0;
+        
+        public const double HeaderHeight = 24.0;
 
         private double windowWidth = 400.0 + 2 * OuterBorderWidth;
         public double WindowWidth

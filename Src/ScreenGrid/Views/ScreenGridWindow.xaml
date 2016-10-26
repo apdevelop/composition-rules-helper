@@ -8,7 +8,7 @@
         Height="{Binding WindowHeight, Mode=TwoWay}"
         Topmost="True"
         WindowStyle="None"
-        ResizeMode="CanResizeWithGrip"
+        ResizeMode="CanResize"
         AllowsTransparency="True"
         MinWidth="150"
         MinHeight="50"
@@ -16,7 +16,7 @@
         Background="Transparent" 
         Loaded="Window_Loaded" 
         Closing="Window_Closing">
-    
+
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -47,6 +47,16 @@
                 <Setter Property="Stroke" Value="Black" />
                 <Setter Property="Fill" Value="Black" />
             </Style>
+            <Style x:Key="RectBorderStyle" TargetType="Rectangle">
+                <Setter Property="Focusable" Value="False" />
+                <Setter Property="Fill" Value="White" />
+                <Setter Property="Opacity" Value="0.5" />
+                <Setter Property="Stroke" Value="Magenta" />
+                <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+                <EventSetter Event="MouseLeftButtonDown" Handler="ResizeInit"/>
+                <EventSetter Event="MouseLeftButtonUp" Handler="ResizeEnd"/>
+                <EventSetter Event="MouseMove" Handler="ResizingForm"/>
+            </Style>
         </Grid.Resources>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -54,7 +64,7 @@
                     ToolTip="Select grid type">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataRow}}" />
-                </ContentControl>                
+                </ContentControl>
             </Button>
             <Button ToolTip="Snap to image borders in topmost window"
                     Command="{Binding SnapCommand}">
@@ -66,7 +76,7 @@
                     Command="{Binding RotateCounterClockwiseCommand}">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataRotate01}}" />
-                </ContentControl>                
+                </ContentControl>
             </Button>
             <Button ToolTip="Rotate grid clockwise"
                     Command="{Binding RotateClockwiseCommand}">
@@ -100,7 +110,7 @@
                             ToolTip="Grid lines color"
                             ItemsSource="{Binding LineColors, Mode=OneTime}"
                             SelectedItem="{Binding SelectedLineColor, Mode=TwoWay}">
-                            <ComboBox.ItemTemplate>
+                    <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Margin="2">
                                 <Rectangle Stroke="Black" 
@@ -141,6 +151,48 @@
                         IsHitTestVisible="False"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                         Content="{Binding ContentControl}" />
+
+        <Rectangle x:Name="LeftSizeGrip" Grid.Row="2"
+            Width="3" Height="50"
+            HorizontalAlignment="Left" VerticalAlignment="Center"
+            Cursor="SizeWE"
+            Style="{StaticResource RectBorderStyle}" />
+
+        <Rectangle x:Name="RightSizeGrip" Grid.Row="2"
+            Width="3" Height="50"
+            HorizontalAlignment="Right" VerticalAlignment="Center"
+            Cursor="SizeWE"
+            Style="{StaticResource RectBorderStyle}" />
+
+        <Rectangle x:Name="BottomSizeGrip" Grid.Row="2"
+            Width="50" Height="3"
+            HorizontalAlignment="Center" VerticalAlignment="Bottom"
+            Cursor="SizeNS"
+            Style="{StaticResource RectBorderStyle}" />
+
+        <Rectangle Name="BottomRightSizeGrip" Grid.Row="2"
+            Width="5" Height="5"
+            HorizontalAlignment="Right" VerticalAlignment="Bottom"
+            Cursor="SizeNWSE"
+            Style="{StaticResource RectBorderStyle}" />
+
+        <Rectangle Name="BottomLeftSizeGrip" Grid.Row="2"
+            Width="5" Height="5"
+            HorizontalAlignment="Left" VerticalAlignment="Bottom"
+            Cursor="SizeNESW"
+            Style="{StaticResource RectBorderStyle}" />
+
+        <Rectangle Name="TopLeftSizeGrip" Grid.Row="2"
+            Width="5" Height="5"
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+            Cursor="SizeNWSE"
+            Style="{StaticResource RectBorderStyle}" />
+        
+        <Rectangle Name="TopRightSizeGrip" Grid.Row="2"
+            Width="5" Height="5"
+            HorizontalAlignment="Right" VerticalAlignment="Top"
+            Cursor="SizeNESW"
+            Style="{StaticResource RectBorderStyle}" />
 
     </Grid>
 </Window>

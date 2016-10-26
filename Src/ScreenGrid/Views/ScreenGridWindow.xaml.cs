@@ -4,6 +4,7 @@
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
+    using System.Windows.Shapes;
 
     public partial class ScreenGridWindow : Window
     {
@@ -117,5 +118,90 @@
                 this.Visibility = Visibility.Hidden;
             }
         }
+
+        #region ResizeWindows
+
+        private bool isResizeInProcess = false;
+
+        private void ResizeInit(object sender, MouseButtonEventArgs e)
+        {
+            var senderRect = sender as Rectangle;
+            if (senderRect != null)
+            {
+                this.isResizeInProcess = true;
+                senderRect.CaptureMouse();
+            }
+        }
+
+        private void ResizeEnd(object sender, MouseButtonEventArgs e)
+        {
+            var senderRect = sender as Rectangle;
+            if (senderRect != null)
+            {
+                this.isResizeInProcess = false; ;
+                senderRect.ReleaseMouseCapture();
+            }
+        }
+
+        private void ResizingForm(object sender, MouseEventArgs e)
+        {
+            if (this.isResizeInProcess)
+            {
+                var senderRect = sender as Rectangle;
+                if (senderRect != null)
+                {
+                    var window = senderRect.Tag as Window;
+                    var width = e.GetPosition(window).X;
+                    var height = e.GetPosition(window).Y;
+                    senderRect.CaptureMouse();
+
+                    var senderName = senderRect.Name.ToLower();
+
+                    if (senderName.Contains("right"))
+                    {
+                        width++;
+                        if (width > window.MinWidth)
+                        {
+                            window.Width = width;
+                        }
+                    }
+
+                    if (senderName.Contains("left"))
+                    {
+                        width--;
+                        
+                        window.Left += width;
+                        width = window.Width - width;
+                        if (width > window.MinWidth)
+                        {
+                            window.Width = width;
+                        }
+                    }
+
+                    if (senderName.Contains("bottom"))
+                    {
+                        height++;
+                        if (height > window.MinHeight)
+                        {
+                            window.Height = height;
+                        }
+                    }
+
+                    if (senderName.Contains("top"))
+                    {
+                        height -= ViewModels.ScreenGridViewModel.HeaderHeight;
+                        height--;
+                        window.Top += height;
+                        height = window.Height - height;
+                        if (height > window.MinHeight)
+                        {
+                            window.Height = height;
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
     }
 }
