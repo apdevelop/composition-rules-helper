@@ -115,16 +115,16 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Models\Resources\LowerRightCorner.png" />
+    <EmbeddedResource Include="Models\Resources\LowerRightCorner.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Models\Resources\LowerRightCorner2.png" />
+    <EmbeddedResource Include="Models\Resources\LowerRightCorner2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Models\Resources\UpperLeftCorner.png" />
+    <EmbeddedResource Include="Models\Resources\UpperLeftCorner.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Models\Resources\UpperLeftCorner2.png" />
+    <EmbeddedResource Include="Models\Resources\UpperLeftCorner2.png" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\Assets\PathData.xaml">
