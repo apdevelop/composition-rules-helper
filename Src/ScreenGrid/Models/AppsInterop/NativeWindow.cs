@@ -47,9 +47,17 @@
             get
             {
                 var lpClassName = new StringBuilder(1000);
-                WinApiInterop.NativeMethods.GetClassName(hWnd, lpClassName, 1000);
+                WinApiInterop.NativeMethods.GetClassName(this.hWnd, lpClassName, 1000);
 
                 return lpClassName.ToString();
+            }
+        }
+
+        public string Title
+        {
+            get
+            {
+                return WinApiInterop.NativeMethods.GetWindowText(this.hWnd);
             }
         }
 
@@ -90,7 +98,7 @@
             return WinApiInterop.NativeMethods.GetWindowImage(this.hWnd, 0, 0, (rect.Right - rect.Left) + 1, (rect.Bottom - rect.Top) + 1); // TODO: +1 ?
         }
 
-        public static NativeWindow GetTopMostWindow()
+        public static IList<NativeWindow> GetWindowsInTopMostOrder()
         {
             // Is there are win32 function to get a list off all top level windows
             // with a given class name?
@@ -106,6 +114,7 @@
             var ClassNamesPartialBlackList = new[] { "ScreenGrid", "HwndWrapper", };
 
             var results = new List<NativeWindow>();
+
             WinApiInterop.NativeMethods.EnumWindows((hWnd, lParam) =>
             {
                 var window = new NativeWindow(hWnd);
@@ -135,14 +144,7 @@
                 return true;
             }, IntPtr.Zero);
 
-            if (results.Count > 0)
-            {
-                return results[0];
-            }
-            else
-            {
-                return null;
-            }
+            return results;
         }
 
         public override string ToString()

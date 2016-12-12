@@ -20,23 +20,19 @@
 
         public static OctaneRenderWindow GetFromFirstProcess()
         {
-            var proc = System.Diagnostics.Process.GetProcesses().Where(p => String.Compare(p.ProcessName, ProcessName, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+            var process = System.Diagnostics.Process.GetProcesses()
+                .Where(p => String.Compare(p.ProcessName, ProcessName, StringComparison.OrdinalIgnoreCase) == 0)
+                .FirstOrDefault();
 
-            if (proc != null)
-            {
-                return new OctaneRenderWindow(proc.MainWindowHandle);
-            }
-            else
-            {
-                return null;
-            }
+            return (process != null) ? new OctaneRenderWindow(process.MainWindowHandle) : null;
         }
 
         public static IList<OctaneRenderWindow> GetFromAllProcesses()
         {
-            var processes = System.Diagnostics.Process.GetProcesses().Where(p => String.Compare(p.ProcessName, ProcessName, StringComparison.OrdinalIgnoreCase) == 0).ToList();
-
-            return (processes.Select(w => new OctaneRenderWindow(w.MainWindowHandle)).ToList());
+            return System.Diagnostics.Process.GetProcesses()
+                .Where(p => String.Compare(p.ProcessName, ProcessName, StringComparison.OrdinalIgnoreCase) == 0)
+                .Select(w => new OctaneRenderWindow(w.MainWindowHandle))
+                .ToList();
         }
 
         private static Bitmap UpperLeftCorner
@@ -121,7 +117,6 @@
             var bottomRightCornerY = 0;
             foreach (var bottomRightCornerFragment in bottomRightCornerFragments)
             {
-                //for (var x = 0; x < image.Width - bottomRightCornerFragment.Width; x++)
                 for (var x = image.Width - bottomRightCornerFragment.Width - 1; x > 0; x--)
                 {
                     for (var y = 0; y < image.Height - bottomRightCornerFragment.Height; y++)
@@ -157,7 +152,6 @@
             {
                 for (var x = (int)topLeftCorner.X; x < (int)bottomRightCorner.X; x++)
                 {
-                    //if (PointUtils.MidDiff(image.pixels[x, y], areaColor1) > 2)
                     if (image.pixels[x, y] != canvasColor)
                     {
                         if (y > (int)topLeftCorner.Y)

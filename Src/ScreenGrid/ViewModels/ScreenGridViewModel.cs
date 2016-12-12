@@ -176,7 +176,7 @@
         #region Window position and size
 
         private const double OuterBorderWidth = 1.0;
-        
+
         public const double HeaderHeight = 24.0;
 
         private double windowWidth = 400.0 + 2 * OuterBorderWidth;
@@ -309,7 +309,7 @@
         {
             get
             {
-                return String.Format(CultureInfo.InvariantCulture,
+                return String.Format(CultureInfo.CurrentCulture,
                     "{0}\u00D7{1}{2}",
                     ImageSize.Item1,
                     ImageSize.Item2,
@@ -320,31 +320,61 @@
         public void SnapToImageBounds()
         {
             // select foreground window from several processes of supported applications
-            var nativeWindow = Models.AppsInterop.NativeWindow.GetTopMostWindow();
+            var nativeWindows = Models.AppsInterop.NativeWindow.GetWindowsInTopMostOrder();
 
-            if (nativeWindow != null) // TODO: display error if no window was found
+            if (nativeWindows.Count > 0) // TODO: display error if no window was found
             {
-                if (nativeWindow.ClassName == Models.AppsInterop.PhotoViewerWindow.MainWindowClassName)
+                if (String.Compare(nativeWindows[0].ClassName, Models.AppsInterop.PhotoViewerWindow.MainWindowClassName, StringComparison.Ordinal) == 0)
                 {
-                    var photoViewerWindow = new Models.AppsInterop.PhotoViewerWindow(nativeWindow.Handle);
+                    var photoViewerWindow = new Models.AppsInterop.PhotoViewerWindow(nativeWindows[0].Handle);
 
                     var rectViewedImage = photoViewerWindow.PhotoCanvasRect();
                     if (!rectViewedImage.IsEmpty)
                     {
-                        this.PositionWindow(Models.Geometry.Point.Zero, rectViewedImage);
+                        var location = new GridTargetLocation { ImageBounds = rectViewedImage, Offset = Models.Geometry.Point.Zero, };
+                        this.PositionWindow(location);
                     }
                 }
                 else
                 {
-                    Task.Factory.StartNew<Tuple<Models.Geometry.Rectangle, Models.Geometry.Point>>(() =>
+                    var nativeWindow = nativeWindows[0];
+
+                    // TODO: simplify Octane Render specific code
+                    // Fixing issue with detached panels of Octane Render Standalone
+                    if (Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses().Count > 0)
                     {
-                        var bitmap = nativeWindow.GetShot();
+                        var octaneRenderWindows = nativeWindows
+                            .Where(w => w.ClassName == Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses()[0].ClassName)
+                            .OrderByDescending(w => w.Rect.Width)
+                            .First();
+
+                        // Select window with max size from topmost list
+                        for (var i = 0; i < nativeWindows.Count; i++)
+                        {
+                            if (nativeWindows[i].ClassName != Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses()[0].ClassName)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                if (nativeWindows[i].Rect.Width == octaneRenderWindows.Rect.Width)
+                                {
+                                    nativeWindow = nativeWindows[i];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    var bitmap = nativeWindow.GetShot();
+
+                    Task.Factory.StartNew<GridTargetLocation>(() =>
+                    {
                         var flatImage = new Models.FlatImage(bitmap);
 
                         Models.Geometry.Rectangle imageBounds;
                         if (Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses().Any(w => w.ClassName == nativeWindow.ClassName))
                         {
-                            // TODO: remove this Octane Render specific code
                             imageBounds = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
                         }
                         else
@@ -353,16 +383,14 @@
                         }
 
                         var nativeWindowLocation = new Models.Geometry.Point(nativeWindow.Location.X, nativeWindow.Location.Y);
-                        return new Tuple<Models.Geometry.Rectangle, Models.Geometry.Point>(imageBounds, nativeWindowLocation);
+                        return new GridTargetLocation { ImageBounds = imageBounds, Offset = nativeWindowLocation, };
                     }).ContinueWith((t) =>
                     {
-                        var imageBounds = t.Result.Item1;
-                        var windowLocation = t.Result.Item2;
-                        if (!imageBounds.IsEmpty)
+                        if (!t.Result.ImageBounds.IsEmpty)
                         {
-                            if ((imageBounds.Width > 150) && (imageBounds.Height > 50))
+                            if ((t.Result.ImageBounds.Width > 150) && (t.Result.ImageBounds.Height > 50))
                             {
-                                this.PositionWindow(t.Result.Item2, t.Result.Item1);
+                                this.PositionWindow(t.Result);
                             }
                         }
                     },
@@ -371,15 +399,22 @@
             }
         }
 
-        private void PositionWindow(Models.Geometry.Point parentLocation, Models.Geometry.Rectangle rectRenderedImage)
+        private void PositionWindow(GridTargetLocation location)
         {
             var diffX = 0.0;
             var diffY = HeaderHeight;
             // TODO: remove magiс numbers
-            this.WindowLeft = rectRenderedImage.Left + parentLocation.X - diffX - 1;
-            this.WindowTop = rectRenderedImage.Top + parentLocation.Y - diffY - 1;
-            this.WindowWidth = (rectRenderedImage.Right - rectRenderedImage.Left) + diffX + 2;
-            this.WindowHeight = (rectRenderedImage.Bottom - rectRenderedImage.Top) + diffY + 2;
+            this.WindowLeft = location.ImageBounds.Left + location.Offset.X - diffX - 1;
+            this.WindowTop = location.ImageBounds.Top + location.Offset.Y - diffY - 1;
+            this.WindowWidth = (location.ImageBounds.Right - location.ImageBounds.Left) + diffX + 2;
+            this.WindowHeight = (location.ImageBounds.Bottom - location.ImageBounds.Top) + diffY + 2;
         }
+    }
+
+    class GridTargetLocation
+    {
+        public Models.Geometry.Point Offset { get; set; }
+
+        public Models.Geometry.Rectangle ImageBounds { get; set; }
     }
 }
