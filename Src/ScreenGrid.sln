@@ -1,9 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrid", "ScreenGrid\ScreenGrid.csproj", "{D8BC8046-FCED-4F48-9E96-CC307CA11ED9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrid.Models.Tests", "ScreenGrid.Models.Tests\ScreenGrid.Models.Tests.csproj", "{966E6B4D-8A28-4CC1-AAD5-933F7B3E5F97}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenGrid.Tests", "ScreenGrid.Tests\ScreenGrid.Tests.csproj", "{966E6B4D-8A28-4CC1-AAD5-933F7B3E5F97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

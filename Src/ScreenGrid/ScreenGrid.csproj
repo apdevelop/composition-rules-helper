@@ -75,8 +75,10 @@
     <Compile Include="Models\Grids\RatioConstants.cs" />
     <Compile Include="Models\Grids\Rotation.cs" />
     <Compile Include="Models\Grids\Rotator.cs" />
+    <Compile Include="Models\GridTargetLocation.cs" />
     <Compile Include="Models\IntegerSegment.cs" />
     <Compile Include="Models\IntegerSegmentUtils.cs" />
+    <Compile Include="Models\NativeWindowState.cs" />
     <Compile Include="ViewModels\ColorItemViewModel.cs" />
     <Compile Include="ViewModels\ScreenGridViewModel.cs" />
     <Compile Include="ViewModels\Utils\BaseNotifyPropertyChanged.cs" />

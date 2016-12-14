@@ -15,7 +15,7 @@
             const int width = 64;
             const int height = 48;
 
-            var flatImage = LoadFlatImageFromResource("ScreenGrid.Models.Tests.Resources.ImageSimple.png");
+            var flatImage = LoadFlatImageFromResource("ScreenGrid.Tests.Resources.ImageSimple.png");
 
             Assert.AreEqual(width, flatImage.Width);
             Assert.AreEqual(height, flatImage.Height);
@@ -30,7 +30,7 @@
         [Test]
         public void GetDerivativeTest()
         {
-            var flatImage = LoadFlatImageFromResource("ScreenGrid.Models.Tests.Resources.ImageSimple.png");
+            var flatImage = LoadFlatImageFromResource("ScreenGrid.Tests.Resources.ImageSimple.png");
             var stripeMiddle = flatImage.GetHorizontalStripe(flatImage.Height / 2);
 
             var dMiddle = FlatImage.GetDerivative(stripeMiddle);
@@ -44,7 +44,7 @@
         [Test]
         public void FindBordersTest()
         {
-            var flatImage = LoadFlatImageFromResource("ScreenGrid.Models.Tests.Resources.ImageSimple.png");
+            var flatImage = LoadFlatImageFromResource("ScreenGrid.Tests.Resources.ImageSimple.png");
 
             const int minimalSegmentLength = 8;
             var step = flatImage.Height / 8;
@@ -63,7 +63,7 @@
         [Test]
         public void FindBoundsOfInnerImage()
         {
-            var flatImage = LoadFlatImageFromResource("ScreenGrid.Models.Tests.Resources.ImageSimple.png");
+            var flatImage = LoadFlatImageFromResource("ScreenGrid.Tests.Resources.ImageSimple.png");
 
             var result = flatImage.FindBoundsOfInnerImage();
 

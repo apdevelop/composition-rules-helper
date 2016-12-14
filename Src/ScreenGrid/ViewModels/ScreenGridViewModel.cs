@@ -320,10 +320,22 @@
         public void SnapToImageBounds()
         {
             // select foreground window from several processes of supported applications
-            var nativeWindows = Models.AppsInterop.NativeWindow.GetWindowsInTopMostOrder();
+            var nativeWindowsList = Models.AppsInterop.NativeWindow.GetWindowsInTopMostOrder();
 
-            if (nativeWindows.Count > 0) // TODO: display error if no window was found
+            var nativeWindows = nativeWindowsList
+                .Select(w => new Models.NativeWindowState
+                {
+                    Handle = w.Handle,
+                    ClassName = w.ClassName,
+                    Width = w.Rect.Width,
+                    Height = w.Rect.Height,
+                    Caption = w.Title,
+                })
+            .ToList();
+
+            if (nativeWindows.Count > 0)
             {
+                // TODO: refactor - move priority logic to model
                 if (String.Compare(nativeWindows[0].ClassName, Models.AppsInterop.PhotoViewerWindow.MainWindowClassName, StringComparison.Ordinal) == 0)
                 {
                     var photoViewerWindow = new Models.AppsInterop.PhotoViewerWindow(nativeWindows[0].Handle);
@@ -331,7 +343,7 @@
                     var rectViewedImage = photoViewerWindow.PhotoCanvasRect();
                     if (!rectViewedImage.IsEmpty)
                     {
-                        var location = new GridTargetLocation { ImageBounds = rectViewedImage, Offset = Models.Geometry.Point.Zero, };
+                        var location = new Models.GridTargetLocation { ImageBounds = rectViewedImage, Offset = Models.Geometry.Point.Zero, };
                         this.PositionWindow(location);
                     }
                 }
@@ -339,41 +351,25 @@
                 {
                     var nativeWindow = nativeWindows[0];
 
-                    // TODO: simplify Octane Render specific code
-                    // Fixing issue with detached panels of Octane Render Standalone
+                    var isOctaneRender = false;
                     if (Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses().Count > 0)
                     {
-                        var octaneRenderWindows = nativeWindows
-                            .Where(w => w.ClassName == Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses()[0].ClassName)
-                            .OrderByDescending(w => w.Rect.Width)
-                            .First();
-
-                        // Select window with max size from topmost list
-                        for (var i = 0; i < nativeWindows.Count; i++)
+                        var w = SelectOctaneRenderStandaloneMainWindow(nativeWindows, Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses()[0].ClassName);
+                        if (w != null)
                         {
-                            if (nativeWindows[i].ClassName != Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses()[0].ClassName)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                if (nativeWindows[i].Rect.Width == octaneRenderWindows.Rect.Width)
-                                {
-                                    nativeWindow = nativeWindows[i];
-                                    break;
-                                }
-                            }
+                            nativeWindow = w;
+                            isOctaneRender = true;
                         }
                     }
 
-                    var bitmap = nativeWindow.GetShot();
-
-                    Task.Factory.StartNew<GridTargetLocation>(() =>
+                    var selectedNativeWindow = new Models.AppsInterop.NativeWindow(nativeWindow.Handle);
+                    var bitmap = selectedNativeWindow.GetShot();
+                    Task.Factory.StartNew<Models.GridTargetLocation>(() =>
                     {
                         var flatImage = new Models.FlatImage(bitmap);
 
                         Models.Geometry.Rectangle imageBounds;
-                        if (Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses().Any(w => w.ClassName == nativeWindow.ClassName))
+                        if (isOctaneRender)
                         {
                             imageBounds = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
                         }
@@ -382,8 +378,8 @@
                             imageBounds = flatImage.FindBoundsOfInnerImage();
                         }
 
-                        var nativeWindowLocation = new Models.Geometry.Point(nativeWindow.Location.X, nativeWindow.Location.Y);
-                        return new GridTargetLocation { ImageBounds = imageBounds, Offset = nativeWindowLocation, };
+                        var nativeWindowLocation = new Models.Geometry.Point(selectedNativeWindow.Location.X, selectedNativeWindow.Location.Y);
+                        return new Models.GridTargetLocation { ImageBounds = imageBounds, Offset = nativeWindowLocation, };
                     }).ContinueWith((t) =>
                     {
                         if (!t.Result.ImageBounds.IsEmpty)
@@ -399,22 +395,45 @@
             }
         }
 
-        private void PositionWindow(GridTargetLocation location)
+        // TODO: refactor - move to model
+        public static Models.NativeWindowState SelectOctaneRenderStandaloneMainWindow(IList<Models.NativeWindowState> nativeWindows, string className)
         {
+            // Fixing issue with detached panels of Octane Render Standalone
+            var maxWindow = nativeWindows
+                .Where(w => (String.Compare(w.ClassName, className, StringComparison.Ordinal) == 0))
+                .OrderByDescending(w => w.Width * w.Height)
+                .First();
+
+            // Select window with max size from topmost list
+            for (var i = 0; i < nativeWindows.Count; i++)
+            {
+                if (nativeWindows[i].ClassName != className)
+                {
+                    return null;
+                }
+                else
+                {
+                    if (nativeWindows[i].Handle.ToInt32() == maxWindow.Handle.ToInt32())
+                    {
+                        return nativeWindows[i];
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private void PositionWindow(Models.GridTargetLocation location)
+        {
+            const int BufferSize = 1;
+
             var diffX = 0.0;
             var diffY = HeaderHeight;
-            // TODO: remove magiс numbers
-            this.WindowLeft = location.ImageBounds.Left + location.Offset.X - diffX - 1;
-            this.WindowTop = location.ImageBounds.Top + location.Offset.Y - diffY - 1;
-            this.WindowWidth = (location.ImageBounds.Right - location.ImageBounds.Left) + diffX + 2;
-            this.WindowHeight = (location.ImageBounds.Bottom - location.ImageBounds.Top) + diffY + 2;
+
+            this.WindowLeft = location.ImageBounds.Left + location.Offset.X - diffX - BufferSize;
+            this.WindowTop = location.ImageBounds.Top + location.Offset.Y - diffY - BufferSize;
+            this.WindowWidth = (location.ImageBounds.Right - location.ImageBounds.Left) + diffX + 2 * BufferSize;
+            this.WindowHeight = (location.ImageBounds.Bottom - location.ImageBounds.Top) + diffY + 2 * BufferSize;
         }
-    }
-
-    class GridTargetLocation
-    {
-        public Models.Geometry.Point Offset { get; set; }
-
-        public Models.Geometry.Rectangle ImageBounds { get; set; }
     }
 }
