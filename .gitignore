@@ -1,5 +1,6 @@
 Dist
 
+Src/.vs
 Src/*.suo
 Src/**/[Bb]in/
 Src/**/[Oo]bj/
