@@ -16,7 +16,10 @@
             base.OnStartup(e);
             this.DispatcherUnhandledException += AppDispatcherUnhandledException;
 
-            (new ScreenGrid.Views.ScreenGridWindow()).Show();
+            (new Views.ScreenGridWindow
+            {
+                DataContext = new ViewModels.ScreenGridViewModel()
+            }).Show();
         }
 
         private void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)

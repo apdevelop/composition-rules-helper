@@ -21,15 +21,10 @@
             // Making text sharp
             TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
 
-            // TODO: external ViewModel
             this.InitializeComponent();
-            this.vm = new ViewModels.ScreenGridViewModel();
-            this.DataContext = this.vm;
         }
 
         private ContextMenu mainMenu;
-
-        private ViewModels.ScreenGridViewModel vm;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -75,7 +70,7 @@
                     }
 
                     menuItem.IsChecked = true;
-                    this.vm.GridMode = (Models.Grids.GridType)((s as MenuItem).Tag);
+                    (this.DataContext as ViewModels.ScreenGridViewModel).GridMode = (Models.Grids.GridType)((s as MenuItem).Tag);
                 };
 
                 this.mainMenu.Items.Add(menuItem);
