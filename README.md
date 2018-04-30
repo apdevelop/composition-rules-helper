@@ -1,5 +1,5 @@
 # Composition Rules Helper
-Simple but useful Windows desktop application for displaying and auto aligning 'composition rules' grids on top of images. Can be used for artistic educational or creative purposes. 
+Windows desktop application for displaying and auto aligning 'composition rules' grids on top of images. Can be used for artistic educational or creative purposes. 
 
 ### Features
 * Displaying one of the selected composition grids (Thirds, Golden Ratio, Diagonal of Thirds and so on) in transparent window. 
@@ -7,7 +7,7 @@ Simple but useful Windows desktop application for displaying and auto aligning '
 * Rotating and flipping selected grid.
 
 ### Technologies
-Developed using MS Visual Studio 2010, C# .NET 4.0, WPF for UI. Code separation according to MVVM pattern. No external dependencies.
+Developed using MS Visual Studio 2017, C#.NET 4.0, WPF for UI. Code separation according to MVVM pattern. No external dependencies.
 
 ### Screenshot
 ![Demo screenshot](https://github.com/apdevelop/composition-rules-helper/blob/master/Docs/ScreenGrid.png)
