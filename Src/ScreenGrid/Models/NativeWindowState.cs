@@ -1,8 +1,8 @@
-﻿using System;
-using System.Globalization;
-
-namespace ScreenGrid.Models
+﻿namespace ScreenGrid.Models
 {
+    using System;
+    using System.Globalization;
+
     /// <summary>
     /// Anemic model
     /// </summary>

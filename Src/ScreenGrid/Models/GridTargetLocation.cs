@@ -1,10 +1,9 @@
-﻿
-namespace ScreenGrid.Models
+﻿namespace ScreenGrid.Models
 {
     class GridTargetLocation
     {
-        public Models.Geometry.Point Offset { get; set; }
+        public Geometry.Point Offset { get; set; }
 
-        public Models.Geometry.Rectangle ImageBounds { get; set; }
+        public Geometry.Rectangle ImageBounds { get; set; }
     }
 }
