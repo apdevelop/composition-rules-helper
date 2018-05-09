@@ -31,6 +31,13 @@
             this.FlipHorizontalCommand = new RelayCommand((o) => { this.FlipH = !this.FlipH; });
             this.FlipVerticalCommand = new RelayCommand((o) => { this.FlipV = !this.FlipV; });
             this.SnapCommand = new RelayCommand((o) => { this.SnapToImageBounds(); });
+            this.SwitchGridSelectorCommand = new RelayCommand((o) => { this.IsGridSelectorVisible = !this.isGridSelectorVisible; });
+            this.SelectGridCommand = new RelayCommand((o) =>
+            {
+                this.GridMode = (GridType)o;
+                this.IsGridSelectorVisible = false;
+                // TODO: highlight button (set background color)
+            });
         }
 
         public ICommand RotateClockwiseCommand { get; private set; }
@@ -38,6 +45,8 @@
         public ICommand FlipHorizontalCommand { get; private set; }
         public ICommand FlipVerticalCommand { get; private set; }
         public ICommand SnapCommand { get; private set; }
+        public ICommand SwitchGridSelectorCommand { get; private set; }
+        public ICommand SelectGridCommand { get; private set; }
 
         private GridType gridMode;
         public GridType GridMode
@@ -138,6 +147,33 @@
                     this.selectedLineColor = value.Color;
                     this.UpdateContentControl();
                 }
+            }
+        }
+
+        private bool isGridSelectorVisible = false;
+
+        public bool IsGridSelectorVisible
+        {
+            get
+            {
+                return this.isGridSelectorVisible;
+            }
+
+            set
+            {
+                if (this.isGridSelectorVisible != value)
+                {
+                    this.isGridSelectorVisible = value;
+                    base.OnPropertyChanged("GridSelectorVisibility");
+                }
+            }
+        }
+
+        public Visibility GridSelectorVisibility
+        {
+            get
+            {
+                return (this.IsGridSelectorVisible ? Visibility.Visible : Visibility.Collapsed);
             }
         }
 

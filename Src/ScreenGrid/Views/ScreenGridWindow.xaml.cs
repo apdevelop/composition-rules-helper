@@ -12,7 +12,6 @@
         // TODO: Disable rotate/flip buttons depending on grid type
         // TODO: Move window by cursor keys
         // TODO: Remove image files from resources
-        // TODO: Resize window using sides handles
 
         public ScreenGridWindow()
         {
@@ -69,6 +68,7 @@
                         }
                     }
 
+                    // TODO: ! issue - checked state isn't based on viewmodel data
                     menuItem.IsChecked = true;
                     (this.DataContext as ViewModels.ScreenGridViewModel).GridMode = (Models.Grids.GridType)((s as MenuItem).Tag);
                 };

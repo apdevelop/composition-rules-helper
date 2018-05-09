@@ -82,7 +82,7 @@
         /// <param name="height">Height of output image</param>
         /// <param name="isRotated">Output grid is rotated (width swapped with height)</param>
         /// <returns>List of lines</returns>
-        public static IEnumerable<Line> CreateGrid(GridType gridType, double width, double height, bool isRotated)
+        public static IList<Line> CreateGrid(GridType gridType, double width, double height, bool isRotated)
         {
             var actualAspectRatio = CalculateAspectRatio(width, height, isRotated);
 
@@ -294,7 +294,7 @@
                         const double FullTurn = 2.0 * Math.PI;
                         const double MaxAngle = ((double)NumberOfTurns) * FullTurn;
 
-                        for (var theta = 0.0; theta < MaxAngle; )
+                        for (var theta = 0.0; theta < MaxAngle;)
                         {
                             var r = Math.Pow(RatioConstants.GoldenSpiralCInRadians, theta);
 
@@ -415,6 +415,25 @@
 
                         return lines;
                     }
+                case GridType.GoldenCircles:
+                    {
+                        var lines = new List<Line>();
+
+                        var rectangle = CalculateDynamicRectangleExtents(RatioConstants.Phi, actualAspectRatio);
+                        var centerLine = rectangle.Top + rectangle.Height / 2.0;
+
+                        // Major circles
+                        var majorRadius = (rectangle.Width * RatioConstants.Phi5D8) / 2.0;
+                        lines.AddRange(CreateCirclePoints(rectangle.Left + majorRadius, centerLine, majorRadius, actualAspectRatio));
+                        lines.AddRange(CreateCirclePoints(rectangle.Right - majorRadius, centerLine, majorRadius, actualAspectRatio));
+
+                        // Minor circles
+                        var minorRadius = (rectangle.Width * RatioConstants.Phi3D8) / 2.0;
+                        lines.AddRange(CreateCirclePoints(rectangle.Left + minorRadius, centerLine, minorRadius, actualAspectRatio));
+                        lines.AddRange(CreateCirclePoints(rectangle.Right - minorRadius, centerLine, minorRadius, actualAspectRatio));
+
+                        return lines;
+                    }
                 case GridType.RootPhiRectangle:
                     {
                         var rectangle = CalculateDynamicRectangleExtents(RatioConstants.RootPhi / RatioConstants.One, actualAspectRatio);
@@ -422,7 +441,7 @@
 
                         var w = rectangle.Width / (RatioConstants.RootPhi * RatioConstants.RootPhi);
                         var h = rectangle.Height / (RatioConstants.RootPhi * RatioConstants.RootPhi);
-                        
+
                         lines.Add(new Line(rectangle.Left + w, rectangle.Top, rectangle.Left + w, rectangle.Bottom));
                         lines.Add(new Line(rectangle.Right - w, rectangle.Top, rectangle.Right - w, rectangle.Bottom));
                         lines.Add(new Line(rectangle.Left, rectangle.Top + h, rectangle.Right, rectangle.Top + h));
@@ -448,6 +467,7 @@
                         lines.Add(new Line(rectangle.Left, rectangle.Top, RatioConstants.Half, rectangle.Bottom));
                         lines.Add(new Line(RatioConstants.Half, rectangle.Bottom, rectangle.Right, rectangle.Top));
                         lines.Add(new Line(RatioConstants.Half, rectangle.Top, rectangle.Right, rectangle.Bottom));
+
                         return lines;
                     }
                 case GridType.Root3Rectangle:
@@ -466,6 +486,7 @@
                         var h = rectangle.Height / 3.0;
                         lines.Add(new Line(rectangle.Left, rectangle.Top + h, rectangle.Right, rectangle.Top + h));
                         lines.Add(new Line(rectangle.Left, rectangle.Bottom - h, rectangle.Right, rectangle.Bottom - h));
+
                         return lines;
                     }
                 case GridType.Root4Rectangle:
@@ -509,6 +530,7 @@
                         lines.Add(new Line(rectangle.Left, rectangle.CenterY, rectangle.Right, rectangle.CenterY));
                         lines.Add(new Line(rectangle.Left, rectangle.Top + h, rectangle.Right, rectangle.Top + h));
                         lines.Add(new Line(rectangle.Left, rectangle.Bottom - h, rectangle.Right, rectangle.Bottom - h));
+
                         return lines;
                     }
                 default:
@@ -516,6 +538,29 @@
                         throw new ArgumentException(gridType.ToString());
                     }
             }
+        }
+
+        private static IList<Line> CreateCirclePoints(double centerX, double centerY, double radius, double actualAspectRatio)
+        {
+            const double FullTurn = 2.0 * Math.PI;
+            var step = 0.01 * FullTurn; // TODO: compute optimal step from circle radius with desired smoothness
+
+            var points = new List<Point>((int)(FullTurn / step));
+            for (var theta = 0.0; theta < FullTurn; theta += step)
+            {
+                var x = centerX + radius * Math.Cos(theta);
+                var y = 1.0 - (centerY + radius * Math.Sin(theta) * actualAspectRatio); // Flip Y axis
+
+                points.Add(new Point(x, y));
+            }
+
+            var lines = new List<Line>();
+            for (var i = 1; i < points.Count; i++)
+            {
+                lines.Add(new Line(points[i - 1], points[i]));
+            }
+
+            return lines;
         }
 
         private static double CalculateAspectRatio(double width, double height, bool isRotated = false)
@@ -545,6 +590,32 @@
             }
 
             return new Rectangle { X = left, Y = top, Width = right - left, Height = bottom - top };
+        }
+
+        private static IList<Line> CreateRectangle(Rectangle rectangle, bool withMainDiagonals = false)
+        {
+            var left = rectangle.Left;
+            var right = rectangle.Right;
+            var top = rectangle.Top;
+            var bottom = rectangle.Bottom;
+
+            var lines = new List<Line>()
+            {
+                // Four lines making contour
+                new Line(left, top, left, bottom),
+                new Line(right, top, right, bottom),
+                new Line(left, top, right, top),
+                new Line(left, bottom, right, bottom)
+            };
+
+            // Two main diagonals
+            if (withMainDiagonals)
+            {
+                lines.Add(new Line(left, top, right, bottom));
+                lines.Add(new Line(left, bottom, right, top));
+            }
+
+            return lines;
         }
 
         private static List<Line> CreateRectangleWithMainDiagonals(Rectangle rectangle)
@@ -680,7 +751,7 @@
             });
         }
 
-        private static IEnumerable<Line> CreateLines(Point[] points)
+        private static IList<Line> CreateLines(Point[] points)
         {
             var res = new List<Line>();
 

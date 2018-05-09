@@ -14,12 +14,20 @@
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
             this.DispatcherUnhandledException += AppDispatcherUnhandledException;
 
-            (new Views.ScreenGridWindow
+            var vm = new ViewModels.ScreenGridViewModel();
+            var view = new Views.ScreenGridWindow
             {
-                DataContext = new ViewModels.ScreenGridViewModel()
-            }).Show();
+                DataContext = vm,
+            };
+
+            view.Show();
+
+            // Use for easy debug
+            ////vm.GridMode = Models.Grids.GridType.GoldenCircles;
+            ////vm.SelectedLineColor = new ViewModels.ColorItemViewModel(System.Windows.Media.Colors.Black);
         }
 
         private void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)

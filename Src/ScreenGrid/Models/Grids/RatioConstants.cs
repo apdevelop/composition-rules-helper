@@ -13,7 +13,7 @@
         public static readonly double Three = 3.0;
 
         /// <summary>
-        /// 1.618
+        /// 1.618 (Golden ratio)
         /// </summary>
         public static readonly double Phi = (1.0 + Math.Sqrt(5.0)) / 2.0; 
 

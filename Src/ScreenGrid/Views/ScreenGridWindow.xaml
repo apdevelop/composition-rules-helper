@@ -1,6 +1,7 @@
 ﻿<Window x:Class="ScreenGrid.Views.ScreenGridWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:localModelsGrids="clr-namespace:ScreenGrid.Models.Grids"
         Title="Screen Grid" 
         Left="{Binding WindowLeft, Mode=TwoWay}"
         Top="{Binding WindowTop, Mode=TwoWay}"
@@ -10,8 +11,8 @@
         WindowStyle="None"
         ResizeMode="CanResize"
         AllowsTransparency="True"
-        MinWidth="150"
-        MinHeight="50"
+        MinWidth="400"
+        MinHeight="100"
         WindowStartupLocation="CenterScreen"
         Background="Transparent" 
         Loaded="Window_Loaded" 
@@ -20,6 +21,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Assets/GridTypes.xaml" />
                 <ResourceDictionary Source="Assets/PathData.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -64,6 +66,12 @@
                     ToolTip="Select grid type">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataRow}}" />
+                </ContentControl>
+            </Button>
+            <Button ToolTip="Select grid type using preview selector"
+                    Command="{Binding SwitchGridSelectorCommand}">
+                <ContentControl>
+                    <Path Data="{Binding Source={StaticResource pathDataCalendar05}}" />
                 </ContentControl>
             </Button>
             <Button ToolTip="Snap to image borders in topmost window"
@@ -152,6 +160,158 @@
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                         Content="{Binding ContentControl}" />
 
+        <!-- TODO: composition of several StackPanels with grids grouping by categories -->
+        <StackPanel Grid.Row="2" Orientation="Vertical"
+                   Margin="10,5,10,20"
+                   Visibility="{Binding GridSelectorVisibility}">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Width" Value="64" />
+                    <Setter Property="Height" Value="48" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+                <Style x:Key="GridTypeButtonContentControlStyle" TargetType="ContentControl">
+                    <Setter Property="LayoutTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX="1.333" />
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </StackPanel.Resources>
+
+            <StackPanel Orientation="Horizontal">
+                <Button ToolTip="Crosshair"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.Crosshair}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeCrosshair}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Thirds"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.Thirds}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeThirds}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Golden Ratio"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.GoldenRatio}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeGoldenRatio}}" />
+                    </ContentControl>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Button ToolTip="Diagonal of Thirds"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.DiagonalOfThirds}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeDiagonalOfThirds}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Golden Triangle"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.GoldenTriangle}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeGoldenTriangle}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Golden Diagonal 1"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.GoldenDiagonal1}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeGoldenDiagonal1}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Golden Diagonal 2"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.GoldenDiagonal2}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeGoldenDiagonal2}}" />
+                    </ContentControl>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Button ToolTip="Fibonacci Rectangles"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.FibonacciRectanglesZoomed}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeFibonacciRectanglesZoomed}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Golden Spiral"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.GoldenSpiralZoomed}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeGoldenSpiralZoomed}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Golden Circles"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.GoldenCircles}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeGoldenCircles}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Golden (Phi) Rectangle"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.GoldenRectangle}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeGoldenRectangle}}" />
+                    </ContentControl>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Button ToolTip="1.5 Rectangle"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.OneDotFiveRectangle}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeOneDotFiveRectangle}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Root-Phi Rectangle"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.RootPhiRectangle}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRootPhiRectangle}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Root-2 Rectangle"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.Root2Rectangle}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRoot2Rectangle}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Root-3 Rectangle"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.Root3Rectangle}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRoot2Rectangle}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Root-4 Rectangle"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.Root4Rectangle}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRoot2Rectangle}}" />
+                    </ContentControl>
+                </Button>
+                <Button ToolTip="Root-5 Rectangle"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.Root5Rectangle}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRoot2Rectangle}}" />
+                    </ContentControl>
+                </Button>
+            </StackPanel>
+
+        </StackPanel>
+
         <Rectangle x:Name="LeftSizeGrip" Grid.Row="2"
             Width="3" Height="50"
             HorizontalAlignment="Left" VerticalAlignment="Center"
@@ -187,7 +347,7 @@
             HorizontalAlignment="Left" VerticalAlignment="Top"
             Cursor="SizeNWSE"
             Style="{StaticResource RectBorderStyle}" />
-        
+
         <Rectangle Name="TopRightSizeGrip" Grid.Row="2"
             Width="5" Height="5"
             HorizontalAlignment="Right" VerticalAlignment="Top"

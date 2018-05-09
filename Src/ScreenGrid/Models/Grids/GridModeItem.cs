@@ -1,13 +1,12 @@
 ﻿namespace ScreenGrid.Models.Grids
 {
-    using System;
     using System.Collections.Generic;
 
     public class GridModeItem
     {
-        private GridType gridType;
+        private readonly GridType gridType;
 
-        private string title;
+        private readonly string title;
 
         public GridModeItem(GridType gridType, string title)
         {
@@ -48,6 +47,7 @@
                     new GridModeItem(GridType.GoldenSpiralZoomed, "Golden Spiral"),
                     new GridModeItem(GridType.FibonacciRectanglesStretched, "Fibonacci Rectangles (stretched)"),
                     new GridModeItem(GridType.GoldenSpiralStretched, "Golden Spiral (stretched)"),
+                    new GridModeItem(GridType.GoldenCircles, "Golden Circles"),
                     new GridModeItem(GridType.OneDotFiveRectangle, "1.5 Rectangle"),
                     new GridModeItem(GridType.GoldenRectangle, "Golden (Phi) Rectangle"),
                     new GridModeItem(GridType.RootPhiRectangle, "Root-Phi Rectangle"),

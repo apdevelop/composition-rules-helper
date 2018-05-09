@@ -131,6 +131,10 @@
     <EmbeddedResource Include="Models\Resources\UpperLeftCorner2.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\Assets\GridTypes.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Assets\PathData.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

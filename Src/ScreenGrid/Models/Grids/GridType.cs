@@ -66,6 +66,11 @@
         GoldenSpiralStretched,
 
         /// <summary>
+        /// Two pairs of circles 
+        /// </summary>
+        GoldenCircles,
+
+        /// <summary>
         /// 1.5 Rectangle (1:1.5 or 3:2)
         /// </summary>
         OneDotFiveRectangle,
