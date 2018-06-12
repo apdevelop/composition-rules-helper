@@ -291,21 +291,21 @@
                     Command="{Binding SelectGridCommand}"
                     CommandParameter="{x:Static localModelsGrids:GridType.Root3Rectangle}">
                     <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
-                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRoot2Rectangle}}" />
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRoot3Rectangle}}" />
                     </ContentControl>
                 </Button>
                 <Button ToolTip="Root-4 Rectangle"
                     Command="{Binding SelectGridCommand}"
                     CommandParameter="{x:Static localModelsGrids:GridType.Root4Rectangle}">
                     <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
-                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRoot2Rectangle}}" />
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRoot4Rectangle}}" />
                     </ContentControl>
                 </Button>
                 <Button ToolTip="Root-5 Rectangle"
                     Command="{Binding SelectGridCommand}"
                     CommandParameter="{x:Static localModelsGrids:GridType.Root5Rectangle}">
                     <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
-                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRoot2Rectangle}}" />
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeRoot5Rectangle}}" />
                     </ContentControl>
                 </Button>
             </StackPanel>
