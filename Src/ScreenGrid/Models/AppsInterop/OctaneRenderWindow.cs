@@ -35,19 +35,11 @@
                 .ToList();
         }
 
-        private static Bitmap UpperLeftCorner
+        private static Bitmap UpperLeftCorner1
         {
             get
             {
-                return ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner.png");
-            }
-        }
-
-        private static Bitmap LowerRightCorner
-        {
-            get
-            {
-                return ReadPngResouse("ScreenGrid.Models.Resources.LowerRightCorner.png");
+                return ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner1.png");
             }
         }
 
@@ -56,6 +48,22 @@
             get
             {
                 return ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner2.png");
+            }
+        }
+
+        private static Bitmap UpperLeftCorner3
+        {
+            get
+            {
+                return ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner3.png");
+            }
+        }
+
+        private static Bitmap LowerRightCorner1
+        {
+            get
+            {
+                return ReadPngResouse("ScreenGrid.Models.Resources.LowerRightCorner1.png");
             }
         }
 
@@ -80,8 +88,9 @@
         {
             var topLeftCornerFragments = new[]
             {
-                new FlatImage(OctaneRenderWindow.UpperLeftCorner),
+                new FlatImage(OctaneRenderWindow.UpperLeftCorner1),
                 new FlatImage(OctaneRenderWindow.UpperLeftCorner2),
+                new FlatImage(OctaneRenderWindow.UpperLeftCorner3),
             };
 
             var topLeftCornerX = 0;
@@ -109,7 +118,7 @@
         {
             var bottomRightCornerFragments = new[]
             {
-                new FlatImage(OctaneRenderWindow.LowerRightCorner),
+                new FlatImage(OctaneRenderWindow.LowerRightCorner1),
                 new FlatImage(OctaneRenderWindow.LowerRightCorner2),
             };
 

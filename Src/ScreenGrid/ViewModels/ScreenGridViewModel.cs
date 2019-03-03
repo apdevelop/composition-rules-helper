@@ -400,7 +400,8 @@
 
                     var selectedNativeWindow = new Models.AppsInterop.NativeWindow(nativeWindow.Handle);
                     var bitmap = selectedNativeWindow.GetShot();
-                    Task.Factory.StartNew<Models.GridTargetLocation>(() =>
+
+                    Task.Factory.StartNew(() =>
                     {
                         var flatImage = new Models.FlatImage(bitmap);
 

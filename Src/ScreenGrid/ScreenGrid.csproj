@@ -119,13 +119,13 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Models\Resources\LowerRightCorner.png" />
+    <EmbeddedResource Include="Models\Resources\LowerRightCorner1.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Models\Resources\LowerRightCorner2.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Models\Resources\UpperLeftCorner.png" />
+    <EmbeddedResource Include="Models\Resources\UpperLeftCorner1.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Models\Resources\UpperLeftCorner2.png" />
@@ -145,6 +145,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Models\Resources\UpperLeftCorner3.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
