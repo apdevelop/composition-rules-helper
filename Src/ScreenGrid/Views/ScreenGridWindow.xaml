@@ -310,6 +310,16 @@
                 </Button>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal">
+                <Button ToolTip="Armature (14 Line)"
+                    Command="{Binding SelectGridCommand}"
+                    CommandParameter="{x:Static localModelsGrids:GridType.Armature14Line}">
+                    <ContentControl Style="{StaticResource GridTypeButtonContentControlStyle}">
+                        <Path Data="{Binding Source={StaticResource pathDataGridTypeArmature14Line}}" />
+                    </ContentControl>
+                </Button>
+            </StackPanel>
+            
         </StackPanel>
 
         <Rectangle x:Name="LeftSizeGrip" Grid.Row="2"

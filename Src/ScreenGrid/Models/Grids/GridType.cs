@@ -96,5 +96,7 @@
         Root4Rectangle,
 
         Root5Rectangle,
+
+        Armature14Line,
     }
 }

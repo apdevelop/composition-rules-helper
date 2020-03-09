@@ -55,6 +55,7 @@
                     new GridModeItem(GridType.Root3Rectangle, "Root-3 Rectangle"),
                     new GridModeItem(GridType.Root4Rectangle, "Root-4 Rectangle"),
                     new GridModeItem(GridType.Root5Rectangle, "Root-5 Rectangle"),
+                    new GridModeItem(GridType.Armature14Line, "Armature (14 Line)"),
                 };
             }
         }

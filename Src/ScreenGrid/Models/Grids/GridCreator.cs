@@ -92,7 +92,6 @@
                     {
                         return new List<Line>();
                     }
-
                 case GridType.Crosshair:
                     {
                         const double HorizontalTickLength = (3.0 / 100.0);
@@ -113,7 +112,6 @@
 
                         return CreateLines(points);
                     }
-
                 case GridType.Thirds:
                     {
                         var points = new[]
@@ -126,7 +124,6 @@
 
                         return CreateLines(points);
                     }
-
                 case GridType.DiagonalOfThirds:
                     {
                         var points = new[]
@@ -138,7 +135,6 @@
 
                         return CreateLines(points);
                     }
-
                 case GridType.GoldenRatio:
                     {
                         var points = new[]
@@ -151,7 +147,6 @@
 
                         return CreateLines(points);
                     }
-
                 case GridType.GoldenTriangle:
                     {
                         var srcPoints = new List<Point>(6);
@@ -182,7 +177,6 @@
 
                         return CreateLines(srcPoints.ToArray());
                     }
-
                 case GridType.GoldenDiagonal1:
                     {
                         var points = new[]
@@ -194,7 +188,6 @@
 
                         return CreateLines(points);
                     }
-
                 case GridType.GoldenDiagonal2:
                     {
                         var points = new[]
@@ -206,7 +199,6 @@
 
                         return CreateLines(points);
                     }
-
                 case GridType.FibonacciRectanglesZoomed:
                 case GridType.FibonacciRectanglesStretched:
                     {
@@ -273,7 +265,6 @@
 
                         return lines;
                     }
-
                 case GridType.GoldenSpiralZoomed:
                 case GridType.GoldenSpiralStretched:
                     {
@@ -532,6 +523,33 @@
                         lines.Add(new Line(rectangle.Left, rectangle.Bottom - h, rectangle.Right, rectangle.Bottom - h));
 
                         return lines;
+                    }
+                case GridType.Armature14Line:
+                    {
+                        var points = new[]
+                            {
+                                // Main diagonals
+                                new Point(RatioConstants.Zero, RatioConstants.Zero), new Point(RatioConstants.One, RatioConstants.One),
+                                new Point(RatioConstants.Zero, RatioConstants.One), new Point(RatioConstants.One, RatioConstants.Zero),
+
+                                // Central rotated square
+                                new Point(RatioConstants.Zero, RatioConstants.Half), new Point(RatioConstants.Half, RatioConstants.Zero),
+                                new Point(RatioConstants.Zero, RatioConstants.Half), new Point(RatioConstants.Half, RatioConstants.One),
+                                new Point(RatioConstants.One, RatioConstants.Half), new Point(RatioConstants.Half, RatioConstants.Zero),
+                                new Point(RatioConstants.One, RatioConstants.Half), new Point(RatioConstants.Half, RatioConstants.One),
+
+                                // From corners to sides
+                                new Point(RatioConstants.Zero, RatioConstants.Zero), new Point(RatioConstants.One, RatioConstants.Half),
+                                new Point(RatioConstants.Zero, RatioConstants.Zero), new Point(RatioConstants.Half, RatioConstants.One),
+                                new Point(RatioConstants.Zero, RatioConstants.One), new Point(RatioConstants.Half, RatioConstants.Zero),
+                                new Point(RatioConstants.Zero, RatioConstants.One), new Point(RatioConstants.One, RatioConstants.Half),
+                                new Point(RatioConstants.One, RatioConstants.Zero), new Point(RatioConstants.Zero, RatioConstants.Half),
+                                new Point(RatioConstants.One, RatioConstants.Zero), new Point(RatioConstants.Half, RatioConstants.One),
+                                new Point(RatioConstants.One, RatioConstants.One), new Point(RatioConstants.Half, RatioConstants.Zero),
+                                new Point(RatioConstants.One, RatioConstants.One), new Point(RatioConstants.Zero, RatioConstants.Half),
+                            };
+
+                        return CreateLines(points);
                     }
                 default:
                     {
