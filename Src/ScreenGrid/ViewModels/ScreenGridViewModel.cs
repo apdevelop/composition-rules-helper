@@ -34,7 +34,7 @@
             this.SwitchGridSelectorCommand = new RelayCommand((o) => { this.IsGridSelectorVisible = !this.isGridSelectorVisible; });
             this.SelectGridCommand = new RelayCommand((o) =>
             {
-                this.GridMode = (GridType)o;
+                this.SelectedGridType = (GridType)o;
                 this.IsGridSelectorVisible = false;
                 // TODO: highlight button (set background color)
             });
@@ -48,21 +48,70 @@
         public ICommand SwitchGridSelectorCommand { get; private set; }
         public ICommand SelectGridCommand { get; private set; }
 
-        private GridType gridMode;
-        public GridType GridMode
+        private GridType selectedGridType;
+
+        /// <summary>
+        /// Current selected grid type
+        /// </summary>
+        public GridType SelectedGridType
         {
+            get
+            {
+                return this.selectedGridType;
+            }
+
             set
             {
-                if (this.gridMode != value)
+                if (this.selectedGridType != value)
                 {
-                    this.gridMode = value;
+                    this.selectedGridType = value;
                     this.UpdateContentControl();
+                    this.OnPropertyChanged(nameof(this.IsFlipEnabled));
+                    this.OnPropertyChanged(nameof(this.IsRotateEnabled));
+                }
+            }
+        }
+
+        // TODO: implement full featured viewmodel for List<GridModeItem>
+
+        public bool IsFlipEnabled
+        {
+            get
+            {
+                if (this.SelectedGridType == GridType.None)
+                {
+                    return false;
+                }
+                else
+                {
+                    return GridModeItem.List
+                        .Single(g => g.GridType == this.SelectedGridType)
+                        .IsFlipEnabled;
+                }
+            }
+        }
+
+        public bool IsRotateEnabled
+        {
+            get
+            {
+                if (this.SelectedGridType == GridType.None)
+                {
+                    return false;
+                }
+                else
+                {
+                    return GridModeItem.List
+                        .Single(g => g.GridType == this.SelectedGridType)
+                        .IsRotateEnabled;
                 }
             }
         }
 
         private Rotation rotation = Rotation.R0;
+
         private bool isFlippedHorizontal = false;
+
         private bool isFlippedVertical = false;
 
         private Rotation Rot
@@ -297,7 +346,7 @@
 
             // TODO: place calculated results in cache
             var isRotated = ((this.Rot == Rotation.R90) || (this.Rot == Rotation.R270));
-            var gridLines = GridCreator.CreateGrid(this.gridMode, this.RenderWidth, this.RenderHeight, isRotated);
+            var gridLines = GridCreator.CreateGrid(this.SelectedGridType, this.RenderWidth, this.RenderHeight, isRotated);
 
             var lines = GridCreator.Transform(gridLines, this.rotation, this.isFlippedHorizontal, this.isFlippedVertical, this.RenderWidth, this.RenderHeight);
             for (var i = 0; i < lines.Length; i++)

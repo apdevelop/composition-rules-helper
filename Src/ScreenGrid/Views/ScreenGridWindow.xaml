@@ -81,12 +81,14 @@
                 </ContentControl>
             </Button>
             <Button ToolTip="Rotate grid counter clockwise"
+                    IsEnabled="{Binding IsRotateEnabled}"
                     Command="{Binding RotateCounterClockwiseCommand}">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataRotate01}}" />
                 </ContentControl>
             </Button>
             <Button ToolTip="Rotate grid clockwise"
+                    IsEnabled="{Binding IsRotateEnabled}"
                     Command="{Binding RotateClockwiseCommand}">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataRotate01}}" />
@@ -96,12 +98,14 @@
                 </ContentControl>
             </Button>
             <Button ToolTip="Flip grid vertical"
+                    IsEnabled="{Binding IsFlipEnabled}"
                     Command="{Binding FlipVerticalCommand}">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataZoomVertical02}}" />
                 </ContentControl>
             </Button>
             <Button ToolTip="Flip grid horizontal"
+                    IsEnabled="{Binding IsFlipEnabled}"
                     Command="{Binding FlipHorizontalCommand}">
                 <ContentControl>
                     <Path Data="{Binding Source={StaticResource pathDataZoomHorizontal02}}" />
@@ -319,7 +323,7 @@
                     </ContentControl>
                 </Button>
             </StackPanel>
-            
+
         </StackPanel>
 
         <Rectangle x:Name="LeftSizeGrip" Grid.Row="2"

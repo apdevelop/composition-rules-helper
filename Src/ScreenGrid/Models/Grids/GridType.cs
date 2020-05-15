@@ -1,5 +1,8 @@
 ﻿namespace ScreenGrid.Models.Grids
 {
+    /// <summary>
+    /// Grid type
+    /// </summary>
     public enum GridType
     {
         /// <summary>
@@ -90,13 +93,24 @@
         /// </summary>
         Root2Rectangle,
 
-
+        /// <summary>
+        /// Root-3
+        /// </summary>
         Root3Rectangle,
 
+        /// <summary>
+        /// Root-4
+        /// </summary>
         Root4Rectangle,
 
+        /// <summary>
+        /// Root-5
+        /// </summary>
         Root5Rectangle,
 
+        /// <summary>
+        /// Armature (14 Line)
+        /// </summary>
         Armature14Line,
     }
 }

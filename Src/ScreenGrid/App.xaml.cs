@@ -24,10 +24,6 @@
             };
 
             view.Show();
-
-            // Use for easy debug
-            ////vm.GridMode = Models.Grids.GridType.GoldenCircles;
-            ////vm.SelectedLineColor = new ViewModels.ColorItemViewModel(System.Windows.Media.Colors.Black);
         }
 
         private void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)

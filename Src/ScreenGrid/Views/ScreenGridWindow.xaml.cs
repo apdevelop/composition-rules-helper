@@ -53,7 +53,7 @@
                 var menuItem = new MenuItem
                 {
                     Header = gr.Title,
-                    Tag = gr.GridMode,
+                    Tag = gr.GridType,
                 };
 
                 menuItem.Click += (s, e) =>
@@ -70,7 +70,7 @@
 
                     // TODO: ! issue - checked state isn't based on viewmodel data
                     menuItem.IsChecked = true;
-                    (this.DataContext as ViewModels.ScreenGridViewModel).GridMode = (Models.Grids.GridType)((s as MenuItem).Tag);
+                    (this.DataContext as ViewModels.ScreenGridViewModel).SelectedGridType = (Models.Grids.GridType)((s as MenuItem).Tag);
                 };
 
                 this.mainMenu.Items.Add(menuItem);
