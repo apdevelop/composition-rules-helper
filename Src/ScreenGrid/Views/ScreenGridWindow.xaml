@@ -327,43 +327,49 @@
         </StackPanel>
 
         <Rectangle x:Name="LeftSizeGrip" Grid.Row="2"
-            Width="3" Height="50"
+            Width="{Binding GripWidth}" Height="{Binding GripLength}"
             HorizontalAlignment="Left" VerticalAlignment="Center"
             Cursor="SizeWE"
             Style="{StaticResource RectBorderStyle}" />
 
         <Rectangle x:Name="RightSizeGrip" Grid.Row="2"
-            Width="3" Height="50"
+            Width="{Binding GripWidth}" Height="{Binding GripLength}"
             HorizontalAlignment="Right" VerticalAlignment="Center"
             Cursor="SizeWE"
             Style="{StaticResource RectBorderStyle}" />
 
+        <Rectangle x:Name="TopSizeGrip" Grid.Row="2"
+            Width="{Binding GripLength}" Height="{Binding GripWidth}"
+            HorizontalAlignment="Center" VerticalAlignment="Top"
+            Cursor="SizeNS"
+            Style="{StaticResource RectBorderStyle}" />
+
         <Rectangle x:Name="BottomSizeGrip" Grid.Row="2"
-            Width="50" Height="3"
+            Width="{Binding GripLength}" Height="{Binding GripWidth}"
             HorizontalAlignment="Center" VerticalAlignment="Bottom"
             Cursor="SizeNS"
             Style="{StaticResource RectBorderStyle}" />
 
         <Rectangle Name="BottomRightSizeGrip" Grid.Row="2"
-            Width="5" Height="5"
+            Width="{Binding CornerGripSize}" Height="{Binding CornerGripSize}"
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
             Cursor="SizeNWSE"
             Style="{StaticResource RectBorderStyle}" />
 
         <Rectangle Name="BottomLeftSizeGrip" Grid.Row="2"
-            Width="5" Height="5"
+            Width="{Binding CornerGripSize}" Height="{Binding CornerGripSize}"
             HorizontalAlignment="Left" VerticalAlignment="Bottom"
             Cursor="SizeNESW"
             Style="{StaticResource RectBorderStyle}" />
 
         <Rectangle Name="TopLeftSizeGrip" Grid.Row="2"
-            Width="5" Height="5"
+            Width="{Binding CornerGripSize}" Height="{Binding CornerGripSize}"
             HorizontalAlignment="Left" VerticalAlignment="Top"
             Cursor="SizeNWSE"
             Style="{StaticResource RectBorderStyle}" />
 
         <Rectangle Name="TopRightSizeGrip" Grid.Row="2"
-            Width="5" Height="5"
+            Width="{Binding CornerGripSize}" Height="{Binding CornerGripSize}"
             HorizontalAlignment="Right" VerticalAlignment="Top"
             Cursor="SizeNESW"
             Style="{StaticResource RectBorderStyle}" />

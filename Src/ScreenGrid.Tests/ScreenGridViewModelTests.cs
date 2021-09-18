@@ -22,7 +22,7 @@ namespace ScreenGrid.Tests
                 new NativeWindowState { Handle = new IntPtr(0x000602F4), ClassName = "Internet Explorer_Hidden", Width = 0, Height = 0 },
             };
 
-            var result = ScreenGridViewModel.SelectOctaneRenderStandaloneMainWindow(list, "JUCE_158f853ded5");
+            var result = ScreenGridViewModel.SelectMainWindow(list, "JUCE_158f853ded5");
 
             Assert.AreEqual(1032, result.Width);
         }
@@ -39,7 +39,7 @@ namespace ScreenGrid.Tests
                 new NativeWindowState { Handle = new IntPtr(0x000602F4), ClassName = "Internet Explorer_Hidden", Width = 0, Height = 0 },
             };
 
-            var result = ScreenGridViewModel.SelectOctaneRenderStandaloneMainWindow(list, "JUCE_158f853ded5");
+            var result = ScreenGridViewModel.SelectMainWindow(list, "JUCE_158f853ded5");
 
             Assert.IsNull(result);
         }

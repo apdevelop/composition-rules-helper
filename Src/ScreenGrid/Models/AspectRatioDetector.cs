@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
 
     public static class AspectRatioDetector
@@ -13,7 +12,7 @@
         /// Common aspect ratios
         /// https://en.wikipedia.org/wiki/Aspect_ratio_%28image%29
         /// </summary>
-        private static Dictionary<double, string> commonAspectRatios = new Dictionary<double, string>()
+        private static readonly Dictionary<double, string> commonAspectRatios = new Dictionary<double, string>()
         {
             // TODO: create class with separated properties
             // TODO: add descriptions for displaying in tooltip
@@ -30,6 +29,7 @@
             { 5.0 / 3.0, "5:3" },
             { 16.0 / 9.0, "16:9" },
             { 1.85, "1.85:1" },
+            { 2.00, "2:1" },
             { 2.35, "2.35:1" },
             { 2.39, "2.39:1" },
             { 2.414, "2.414:1" }, // The silver ratio
@@ -57,7 +57,7 @@
                 if (Math.Abs(nearest.Key - ratio) < Tolerance)
                 {
                     var arr = nearest.Value.Split(':');
-                    return String.Format(CultureInfo.InvariantCulture, "{0}:{1}", arr[1], arr[0]);
+                    return arr[1] + ":" + arr[0];
                 }
             }
 

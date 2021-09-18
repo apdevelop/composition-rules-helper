@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
@@ -66,8 +67,8 @@
                 {
                     this.selectedGridType = value;
                     this.UpdateContentControl();
-                    this.OnPropertyChanged(nameof(this.IsFlipEnabled));
-                    this.OnPropertyChanged(nameof(this.IsRotateEnabled));
+                    base.OnPropertyChanged(nameof(this.IsFlipEnabled));
+                    base.OnPropertyChanged(nameof(this.IsRotateEnabled));
                 }
             }
         }
@@ -213,7 +214,7 @@
                 if (this.isGridSelectorVisible != value)
                 {
                     this.isGridSelectorVisible = value;
-                    base.OnPropertyChanged("GridSelectorVisibility");
+                    base.OnPropertyChanged(nameof(GridSelectorVisibility));
                 }
             }
         }
@@ -222,7 +223,7 @@
         {
             get
             {
-                return (this.IsGridSelectorVisible ? Visibility.Visible : Visibility.Collapsed);
+                return this.IsGridSelectorVisible ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -265,6 +266,7 @@
         public const double HeaderHeight = 24.0;
 
         private double windowWidth = 400.0 + 2 * OuterBorderWidth;
+
         public double WindowWidth
         {
             get
@@ -277,13 +279,14 @@
                 if (this.windowWidth != value)
                 {
                     this.windowWidth = value;
-                    base.OnPropertyChanged("WindowWidth");
-                    UpdateContentControl(); // base.OnPropertyChanged("CaptionText");
+                    base.OnPropertyChanged(nameof(WindowWidth));
+                    this.UpdateContentControl();
                 }
             }
         }
 
         private double windowHeight = 300.0 + 2 * OuterBorderWidth + HeaderHeight;
+
         public double WindowHeight
         {
             get
@@ -296,13 +299,14 @@
                 if (this.windowHeight != value)
                 {
                     this.windowHeight = value;
-                    base.OnPropertyChanged("WindowHeight");
-                    UpdateContentControl(); // base.OnPropertyChanged("CaptionText");
+                    base.OnPropertyChanged(nameof(WindowHeight));
+                    this.UpdateContentControl();
                 }
             }
         }
 
         private double windowLeft = 400.0;
+
         public double WindowLeft
         {
             get
@@ -315,12 +319,13 @@
                 if (this.windowLeft != value)
                 {
                     this.windowLeft = value;
-                    base.OnPropertyChanged("WindowLeft");
+                    base.OnPropertyChanged(nameof(WindowLeft));
                 }
             }
         }
 
         private double windowTop = 400.0;
+
         public double WindowTop
         {
             get
@@ -333,28 +338,50 @@
                 if (this.windowTop != value)
                 {
                     this.windowTop = value;
-                    base.OnPropertyChanged("WindowTop");
+                    base.OnPropertyChanged(nameof(WindowTop));
                 }
             }
         }
 
         #endregion
 
-        public void UpdateContentControl()
+        #region Grips options
+
+        public int GripLength { get => 50; }
+
+        public int GripWidth { get => 4; }
+
+        public int CornerGripSize { get => 6; }
+
+        #endregion
+
+        private void UpdateContentControl()
         {
             this.contentControl.Children.Clear();
 
-            // TODO: place calculated results in cache
-            var isRotated = ((this.Rot == Rotation.R90) || (this.Rot == Rotation.R270));
+            var isRotated = (this.Rot == Rotation.R90) || (this.Rot == Rotation.R270);
             var gridLines = GridCreator.CreateGrid(this.SelectedGridType, this.RenderWidth, this.RenderHeight, isRotated);
 
             var lines = GridCreator.Transform(gridLines, this.rotation, this.isFlippedHorizontal, this.isFlippedVertical, this.RenderWidth, this.RenderHeight);
-            for (var i = 0; i < lines.Length; i++)
+            foreach (var line in lines)
             {
-                this.contentControl.Children.Add(CreateLine(lines[i].p1.X, lines[i].p1.Y, lines[i].p2.X, lines[i].p2.Y));
+                this.contentControl.Children.Add(CreateLine(line.p1.X, line.p1.Y, line.p2.X, line.p2.Y));
             }
 
-            base.OnPropertyChanged("CaptionText");
+            // TODO: ? Dark overlay for clipped areas
+            ////this.contentControl.Children.Add(new System.Windows.Shapes.Rectangle
+            ////{
+            ////    Width = 50,
+            ////    Height = this.RenderHeight,
+            ////    VerticalAlignment = VerticalAlignment.Center,
+            ////    HorizontalAlignment = HorizontalAlignment.Left,
+            ////    Stroke = this.LineBrush,
+            ////    Fill = new SolidColorBrush(Color.FromArgb(127, 0, 0, 0)),
+            ////    IsHitTestVisible = false,
+            ////    SnapsToDevicePixels = false,
+            ////});
+
+            base.OnPropertyChanged(nameof(CaptionText));
         }
 
         private System.Windows.Shapes.Line CreateLine(double x1, double y1, double x2, double y2)
@@ -404,10 +431,10 @@
 
         public void SnapToImageBounds()
         {
-            // select foreground window from several processes of supported applications
-            var nativeWindowsList = Models.AppsInterop.NativeWindow.GetWindowsInTopMostOrder();
+            // Select topmost window from several processes of supported applications
 
-            var nativeWindows = nativeWindowsList
+            // Ordered list of windows, from top to bottom
+            var nativeWindows = Models.AppsInterop.NativeWindow.GetWindowsInTopMostOrder()
                 .Select(w => new Models.NativeWindowState
                 {
                     Handle = w.Handle,
@@ -416,7 +443,7 @@
                     Height = w.Rect.Height,
                     Caption = w.Title,
                 })
-            .ToList();
+                .ToList();
 
             if (nativeWindows.Count > 0)
             {
@@ -429,25 +456,53 @@
                     if (!rectViewedImage.IsEmpty)
                     {
                         var location = new Models.GridTargetLocation { ImageBounds = rectViewedImage, Offset = Models.Geometry.Point.Zero, };
-                        this.PositionWindow(location);
+                        this.SetWindowLocation(location);
                     }
                 }
                 else
                 {
-                    var nativeWindow = nativeWindows[0];
+                    var processWindowsList = new List<Models.AppsInterop.NativeWindow>();
 
-                    var isOctaneRender = false;
-                    if (Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses().Count > 0)
+                    // TODO: dictionary <KnownApp, Windows> instead of separate lists
+                    var octaneRenderWindows = Models.AppsInterop.NativeWindow.GetMainWindowWindowOfProcesses(Models.AppsInterop.OctaneRenderWindow.ProcessName);
+                    processWindowsList.AddRange(octaneRenderWindows);
+
+                    var paintNetWindows = Models.AppsInterop.NativeWindow.GetMainWindowWindowOfProcesses("PaintDotNet");
+                    processWindowsList.AddRange(paintNetWindows);
+
+                    var irfanViewWindows = Models.AppsInterop.NativeWindow.GetMainWindowWindowOfProcesses("i_view64");
+                    processWindowsList.AddRange(irfanViewWindows);
+
+                    // Add topmost window from any other application
+                    if (!processWindowsList.Any(pw => pw.Handle == nativeWindows[0].Handle))
                     {
-                        var w = SelectOctaneRenderStandaloneMainWindow(nativeWindows, Models.AppsInterop.OctaneRenderWindow.GetFromAllProcesses()[0].ClassName);
-                        if (w != null)
-                        {
-                            nativeWindow = w;
-                            isOctaneRender = true;
-                        }
+                        processWindowsList.Add(new Models.AppsInterop.NativeWindow(nativeWindows[0].Handle));
                     }
 
-                    var selectedNativeWindow = new Models.AppsInterop.NativeWindow(nativeWindow.Handle);
+                    // TODO: ? main process window - check if it has max size ? search by window class
+                    // SelectMainWindow(nativeWindows, topMostProcessWindow.ClassName);
+
+                    var topmostWindow = processWindowsList
+                        .OrderBy(pw => nativeWindows.FindIndex(nw => nw.Handle == pw.Handle))
+                        .First();
+
+                    var knownApp = KnownApp.Unknown;
+                    if (octaneRenderWindows.Any(w => w.Handle == topmostWindow.Handle))
+                    {
+                        knownApp = KnownApp.OctaneRenderStandalone;
+                    }
+                    else if (paintNetWindows.Any(w => w.Handle == topmostWindow.Handle))
+                    {
+                        knownApp = KnownApp.PaintDotNet;
+                    }
+                    else if (irfanViewWindows.Any(w => w.Handle == topmostWindow.Handle))
+                    {
+                        knownApp = KnownApp.IrfanView;
+                    }
+
+                    Debug.WriteLine($"Topmost process window: {topmostWindow}  App: {knownApp}");
+
+                    var selectedNativeWindow = new Models.AppsInterop.NativeWindow(topmostWindow.Handle);
                     var bitmap = selectedNativeWindow.GetShot();
 
                     Task.Factory.StartNew(() =>
@@ -455,38 +510,53 @@
                         var flatImage = new Models.FlatImage(bitmap);
 
                         Models.Geometry.Rectangle imageBounds;
-                        if (isOctaneRender)
+                        switch (knownApp)
                         {
-                            imageBounds = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
-                        }
-                        else
-                        {
-                            imageBounds = flatImage.FindBoundsOfInnerImage();
+                            case KnownApp.OctaneRenderStandalone:
+                                {
+                                    imageBounds = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
+                                    break;
+                                }
+                            default: // TODO: paint.net and IrfanView specific support
+                                {
+                                    imageBounds = flatImage.FindBoundsOfInnerImage();
+                                    break;
+                                }
                         }
 
-                        var nativeWindowLocation = new Models.Geometry.Point(selectedNativeWindow.Location.X, selectedNativeWindow.Location.Y);
-                        return new Models.GridTargetLocation { ImageBounds = imageBounds, Offset = nativeWindowLocation, };
-                    }).ContinueWith((t) =>
-                    {
-                        if (!t.Result.ImageBounds.IsEmpty)
+                        return new Models.GridTargetLocation
                         {
-                            if ((t.Result.ImageBounds.Width > 150) && (t.Result.ImageBounds.Height > 50))
-                            {
-                                this.PositionWindow(t.Result);
-                            }
+                            Offset = new Models.Geometry.Point(selectedNativeWindow.Location.X, selectedNativeWindow.Location.Y),
+                            ImageBounds = imageBounds,
+                        };
+                    })
+                    .ContinueWith((t) =>
+                    {
+                        if ((!t.Result.ImageBounds.IsEmpty) &&
+                            (t.Result.ImageBounds.Width > 150) &&
+                            (t.Result.ImageBounds.Height > 50))
+                        {
+                            this.SetWindowLocation(t.Result);
                         }
-                    },
-                    TaskScheduler.FromCurrentSynchronizationContext());
+                    }, TaskScheduler.FromCurrentSynchronizationContext());
                 }
             }
         }
 
-        // TODO: refactor - move to model
-        public static Models.NativeWindowState SelectOctaneRenderStandaloneMainWindow(IList<Models.NativeWindowState> nativeWindows, string className)
+        enum KnownApp
         {
-            // Fixing issue with detached panels of Octane Render Standalone
-            var maxWindow = nativeWindows
-                .Where(w => (String.Compare(w.ClassName, className, StringComparison.Ordinal) == 0))
+            Unknown,
+            OctaneRenderStandalone,
+            PaintDotNet,
+            IrfanView,
+        }
+
+        // TODO: refactor - move to model
+        public static Models.NativeWindowState SelectMainWindow(IList<Models.NativeWindowState> nativeWindows, string className)
+        {
+            // Fixing issue with detached panels
+            var maxSizeWindow = nativeWindows
+                .Where(w => String.Compare(w.ClassName, className, StringComparison.Ordinal) == 0)
                 .OrderByDescending(w => w.Width * w.Height)
                 .First();
 
@@ -497,19 +567,16 @@
                 {
                     return null;
                 }
-                else
+                else if (nativeWindows[i].Handle == maxSizeWindow.Handle)
                 {
-                    if (nativeWindows[i].Handle.ToInt32() == maxWindow.Handle.ToInt32())
-                    {
-                        return nativeWindows[i];
-                    }
+                    return nativeWindows[i];
                 }
             }
 
             return null;
         }
 
-        private void PositionWindow(Models.GridTargetLocation location)
+        private void SetWindowLocation(Models.GridTargetLocation location)
         {
             const int BufferSize = 1;
 

@@ -98,7 +98,14 @@
             return WinApiInterop.NativeMethods.GetWindowImage(this.hWnd, 0, 0, (rect.Right - rect.Left) + 1, (rect.Bottom - rect.Top) + 1); // TODO: +1 ?
         }
 
-        public static IList<NativeWindow> GetWindowsInTopMostOrder()
+        public override string ToString()
+        {
+            return this.ClassName;
+        }
+
+        #region Utility methods
+
+        public static List<NativeWindow> GetWindowsInTopMostOrder()
         {
             // Is there are win32 function to get a list off all top level windows
             // with a given class name?
@@ -127,13 +134,13 @@
                 {
                     var className = window.ClassName;
 
-                    if (ClassNamesWhiteList.Any(s => (String.Compare(s, className, StringComparison.Ordinal) == 0)))
+                    if (ClassNamesWhiteList.Any(s => String.Compare(s, className, StringComparison.Ordinal) == 0))
                     {
                         results.Add(window);
                         return true;
                     }
-                    else if ((ClassNamesBlackList.Any(s => (String.Compare(s, className, StringComparison.Ordinal) == 0))) ||
-                             (ClassNamesPartialBlackList.Any(s => (className.Contains(s)))))
+                    else if (ClassNamesBlackList.Any(s => String.Compare(s, className, StringComparison.Ordinal) == 0) ||
+                             ClassNamesPartialBlackList.Any(s => className.Contains(s)))
                     {
                         return true;
                     }
@@ -147,9 +154,14 @@
             return results;
         }
 
-        public override string ToString()
+        public static List<NativeWindow> GetMainWindowWindowOfProcesses(string processName)
         {
-            return this.ClassName;
+            return System.Diagnostics.Process.GetProcesses()
+                .Where(p => String.Compare(p.ProcessName, processName, StringComparison.OrdinalIgnoreCase) == 0)
+                .Select(w => new NativeWindow(w.MainWindowHandle))
+                .ToList();
         }
+
+        #endregion 
     }
 }

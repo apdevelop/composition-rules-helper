@@ -1,7 +1,6 @@
 ﻿namespace ScreenGrid.Models.AppsInterop
 {
     using System;
-    using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
 
@@ -16,7 +15,7 @@
 
         }
 
-        private const string ProcessName = "octane";
+        public const string ProcessName = "octane";
 
         public static OctaneRenderWindow GetFromFirstProcess()
         {
@@ -25,14 +24,6 @@
                 .FirstOrDefault();
 
             return (process != null) ? new OctaneRenderWindow(process.MainWindowHandle) : null;
-        }
-
-        public static IList<OctaneRenderWindow> GetFromAllProcesses()
-        {
-            return System.Diagnostics.Process.GetProcesses()
-                .Where(p => String.Compare(p.ProcessName, ProcessName, StringComparison.OrdinalIgnoreCase) == 0)
-                .Select(w => new OctaneRenderWindow(w.MainWindowHandle))
-                .ToList();
         }
 
         private static Bitmap UpperLeftCorner1

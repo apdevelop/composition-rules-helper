@@ -9,24 +9,21 @@
     public static class GridCreator
     {
         public static Line[] Transform(
-            IEnumerable<Line> src,
+            IEnumerable<Line> lines,
             Rotation rotation,
             bool isFlippedHorizontal,
             bool isFlippedVertical,
             double width,
             double height)
         {
-            var lines = src.ToArray<Line>();
-            var res = new Line[lines.Length];
-
-            for (var i = 0; i < lines.Length; i++)
-            {
-                var newp1 = TransformPoint(lines[i].p1, rotation, isFlippedHorizontal, isFlippedVertical, width, height);
-                var newp2 = TransformPoint(lines[i].p2, rotation, isFlippedHorizontal, isFlippedVertical, width, height);
-                res[i] = new Line(newp1, newp2);
-            }
-
-            return res;
+            return lines
+                .Select(line =>
+                {
+                    var newp1 = TransformPoint(line.p1, rotation, isFlippedHorizontal, isFlippedVertical, width, height);
+                    var newp2 = TransformPoint(line.p2, rotation, isFlippedHorizontal, isFlippedVertical, width, height);
+                    return new Line(newp1, newp2);
+                })
+                .ToArray();
         }
 
         public static Point TransformPoint(
