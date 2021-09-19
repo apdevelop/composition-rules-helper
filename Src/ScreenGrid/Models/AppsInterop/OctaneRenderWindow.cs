@@ -9,8 +9,8 @@
     /// </summary>
     public class OctaneRenderWindow : NativeWindow
     {
-        public OctaneRenderWindow(IntPtr hWnd)
-            : base(hWnd)
+        public OctaneRenderWindow(IntPtr hWnd, int processId)
+            : base(hWnd, processId)
         {
 
         }
@@ -23,7 +23,7 @@
                 .Where(p => String.Compare(p.ProcessName, ProcessName, StringComparison.OrdinalIgnoreCase) == 0)
                 .FirstOrDefault();
 
-            return (process != null) ? new OctaneRenderWindow(process.MainWindowHandle) : null;
+            return (process != null) ? new OctaneRenderWindow(process.MainWindowHandle, process.Id) : null;
         }
 
         private static Bitmap UpperLeftCorner1

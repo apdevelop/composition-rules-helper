@@ -445,12 +445,15 @@
                 })
                 .ToList();
 
+            uint topWindowProcessId = 0;
+            WinApiInterop.NativeMethods.GetWindowThreadProcessId(nativeWindows[0].Handle, out topWindowProcessId);
+
             if (nativeWindows.Count > 0)
             {
                 // TODO: refactor - move priority logic to model
                 if (String.Compare(nativeWindows[0].ClassName, Models.AppsInterop.PhotoViewerWindow.MainWindowClassName, StringComparison.Ordinal) == 0)
                 {
-                    var photoViewerWindow = new Models.AppsInterop.PhotoViewerWindow(nativeWindows[0].Handle);
+                    var photoViewerWindow = new Models.AppsInterop.PhotoViewerWindow(nativeWindows[0].Handle, (int)topWindowProcessId);
 
                     var rectViewedImage = photoViewerWindow.PhotoCanvasRect();
                     if (!rectViewedImage.IsEmpty)
@@ -473,18 +476,26 @@
                     var irfanViewWindows = Models.AppsInterop.NativeWindow.GetMainWindowWindowOfProcesses("i_view64");
                     processWindowsList.AddRange(irfanViewWindows);
 
-                    // Add topmost window from any other application
-                    if (!processWindowsList.Any(pw => pw.Handle == nativeWindows[0].Handle))
+                    // Add topmost window from any other process
+                    if (!processWindowsList.Any(pw => pw.ProcessId == topWindowProcessId))
                     {
-                        processWindowsList.Add(new Models.AppsInterop.NativeWindow(nativeWindows[0].Handle));
+                        processWindowsList.Add(new Models.AppsInterop.NativeWindow(nativeWindows[0].Handle, (int)topWindowProcessId));
                     }
 
                     // TODO: ? main process window - check if it has max size ? search by window class
                     // SelectMainWindow(nativeWindows, topMostProcessWindow.ClassName);
 
-                    var topmostWindow = processWindowsList
-                        .OrderBy(pw => nativeWindows.FindIndex(nw => nw.Handle == pw.Handle))
-                        .First();
+                    var orderedProcessWindowsList = processWindowsList
+                        .Select(pw => new
+                        {
+                            ZIndex = nativeWindows.FindIndex(nw => nw.Handle == pw.Handle),
+                            Window = pw,
+                        })
+                        .Where(r => r.ZIndex >= 0)
+                        .OrderBy(r => r.ZIndex)
+                        .ToList();
+
+                    var topmostWindow = orderedProcessWindowsList.First().Window;
 
                     var knownApp = KnownApp.Unknown;
                     if (octaneRenderWindows.Any(w => w.Handle == topmostWindow.Handle))
@@ -502,7 +513,7 @@
 
                     Debug.WriteLine($"Topmost process window: {topmostWindow}  App: {knownApp}");
 
-                    var selectedNativeWindow = new Models.AppsInterop.NativeWindow(topmostWindow.Handle);
+                    var selectedNativeWindow = new Models.AppsInterop.NativeWindow(topmostWindow.Handle, topmostWindow.ProcessId);
                     var bitmap = selectedNativeWindow.GetShot();
 
                     Task.Factory.StartNew(() =>

@@ -13,9 +13,12 @@
     {
         protected readonly IntPtr hWnd;
 
-        public NativeWindow(IntPtr hWnd)
+        private readonly int processId;
+
+        public NativeWindow(IntPtr hWnd, int processId)
         {
             this.hWnd = hWnd;
+            this.processId = processId;
         }
 
         public IntPtr Handle
@@ -23,6 +26,14 @@
             get
             {
                 return this.hWnd;
+            }
+        }
+
+        public int ProcessId
+        {
+            get
+            {
+                return this.processId;
             }
         }
 
@@ -124,7 +135,10 @@
 
             WinApiInterop.NativeMethods.EnumWindows((hWnd, lParam) =>
             {
-                var window = new NativeWindow(hWnd);
+                uint windowProcessId = 0;
+                WinApiInterop.NativeMethods.GetWindowThreadProcessId(hWnd, out windowProcessId);
+
+                var window = new NativeWindow(hWnd, (int)windowProcessId);
 
                 // TODO: better checks for inappropriate windows
                 // TODO: test in another environments
@@ -158,7 +172,7 @@
         {
             return System.Diagnostics.Process.GetProcesses()
                 .Where(p => String.Compare(p.ProcessName, processName, StringComparison.OrdinalIgnoreCase) == 0)
-                .Select(w => new NativeWindow(w.MainWindowHandle))
+                .Select(p => new NativeWindow(p.MainWindowHandle, p.Id))
                 .ToList();
         }
 

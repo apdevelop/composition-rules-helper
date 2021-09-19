@@ -39,6 +39,9 @@
         [DllImport("user32.dll")]
         private static extern IntPtr GetWindowDC(IntPtr hwnd);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
         [DllImport("gdi32.dll")]
         private static extern UInt64 BitBlt
             (IntPtr hDestDC,

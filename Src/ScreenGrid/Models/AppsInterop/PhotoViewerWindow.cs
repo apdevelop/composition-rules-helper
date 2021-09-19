@@ -9,8 +9,8 @@
       
         private const string PhotoCanvasClassName = "Photos_PhotoCanvas";
 
-        public PhotoViewerWindow(IntPtr hWnd)
-            : base(hWnd)
+        public PhotoViewerWindow(IntPtr hWnd, int processId)
+            : base(hWnd, processId)
         {
 
         }
