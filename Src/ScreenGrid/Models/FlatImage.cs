@@ -1,8 +1,8 @@
-﻿namespace ScreenGrid.Models
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace ScreenGrid.Models
+{
     /// <summary>
     /// 'Flattened' image representation for fast processing
     /// </summary>
@@ -102,8 +102,8 @@
             for (var iy = 1 * this.Height / 4; iy < 3 * this.Height / 4; iy += minimalSegmentLength)
             {
                 stripeCH = IntegerSegmentUtils.IntersectionOfSegments(new[]
-                    { 
-                        stripeCH, 
+                    {
+                        stripeCH,
                         FindHorizontalZeroSegments(iy, minimalSegmentLength)
                     });
             }
@@ -111,8 +111,8 @@
             for (var ix = 1 * this.Width / 4; ix < 3 * this.Width / 4; ix += minimalSegmentLength)
             {
                 stripeCV = IntegerSegmentUtils.IntersectionOfSegments(new[]
-                    { 
-                        stripeCV, 
+                    {
+                        stripeCV,
                         FindVerticalZeroSegments(ix, minimalSegmentLength)
                     });
             }

@@ -1,19 +1,19 @@
-﻿namespace ScreenGrid.ViewModels
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+
+using ScreenGrid.Models.Grids;
+using ScreenGrid.ViewModels.Utils;
+
+namespace ScreenGrid.ViewModels
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Input;
-    using System.Windows.Media;
-
-    using ScreenGrid.Models.Grids;
-    using ScreenGrid.ViewModels.Utils;
-
     public class ScreenGridViewModel : BaseNotifyPropertyChanged
     {
         private Grid contentControl;
@@ -117,10 +117,7 @@
 
         private Rotation Rot
         {
-            get
-            {
-                return this.rotation;
-            }
+            get => this.rotation;
 
             set
             {
@@ -134,10 +131,7 @@
 
         private bool FlipH
         {
-            get
-            {
-                return this.isFlippedHorizontal;
-            }
+            get => this.isFlippedHorizontal;
 
             set
             {
@@ -151,10 +145,7 @@
 
         private bool FlipV
         {
-            get
-            {
-                return this.isFlippedVertical;
-            }
+            get => this.isFlippedVertical;
 
             set
             {
@@ -175,20 +166,11 @@
                     Colors.Black,
                 });
 
-        public IList<ColorItemViewModel> LineColors
-        {
-            get
-            {
-                return lineColors.Select(c => new ColorItemViewModel(c)).ToList();
-            }
-        }
+        public IList<ColorItemViewModel> LineColors => lineColors.Select(c => new ColorItemViewModel(c)).ToList();
 
         public ColorItemViewModel SelectedLineColor
         {
-            get
-            {
-                return new ColorItemViewModel(this.selectedLineColor);
-            }
+            get => new ColorItemViewModel(this.selectedLineColor);
 
             set
             {
@@ -204,10 +186,7 @@
 
         public bool IsGridSelectorVisible
         {
-            get
-            {
-                return this.isGridSelectorVisible;
-            }
+            get => this.isGridSelectorVisible;
 
             set
             {
@@ -219,45 +198,15 @@
             }
         }
 
-        public Visibility GridSelectorVisibility
-        {
-            get
-            {
-                return this.IsGridSelectorVisible ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
+        public Visibility GridSelectorVisibility => this.IsGridSelectorVisible ? Visibility.Visible : Visibility.Collapsed;
 
-        private Brush LineBrush
-        {
-            get
-            {
-                return new SolidColorBrush(this.selectedLineColor) { Opacity = 0.75 };
-            }
-        }
+        private Brush LineBrush => new SolidColorBrush(this.selectedLineColor) { Opacity = 0.75 };
 
-        private double RenderWidth
-        {
-            get
-            {
-                return this.contentControl.RenderSize.Width;
-            }
-        }
+        private double RenderWidth => this.contentControl.RenderSize.Width;
 
-        private double RenderHeight
-        {
-            get
-            {
-                return this.contentControl.RenderSize.Height;
-            }
-        }
+        private double RenderHeight => this.contentControl.RenderSize.Height;
 
-        public Grid ContentControl
-        {
-            get
-            {
-                return this.contentControl;
-            }
-        }
+        public Grid ContentControl => this.contentControl;
 
         #region Window position and size
 
@@ -360,9 +309,9 @@
             this.contentControl.Children.Clear();
 
             var isRotated = (this.Rot == Rotation.R90) || (this.Rot == Rotation.R270);
-            var gridLines = GridCreator.CreateGrid(this.SelectedGridType, this.RenderWidth, this.RenderHeight, isRotated);
+            var gridLines = GridBuilder.CreateGrid(this.SelectedGridType, this.RenderWidth, this.RenderHeight, isRotated);
 
-            var lines = GridCreator.Transform(gridLines, this.rotation, this.isFlippedHorizontal, this.isFlippedVertical, this.RenderWidth, this.RenderHeight);
+            var lines = GridBuilder.Transform(gridLines, this.rotation, this.isFlippedHorizontal, this.isFlippedVertical, this.RenderWidth, this.RenderHeight);
             foreach (var line in lines)
             {
                 this.contentControl.Children.Add(CreateLine(line.p1.X, line.p1.Y, line.p2.X, line.p2.Y));
@@ -479,7 +428,11 @@
                     // Add topmost window from any other process
                     if (!processWindowsList.Any(pw => pw.ProcessId == topWindowProcessId))
                     {
-                        processWindowsList.Add(new Models.AppsInterop.NativeWindow(nativeWindows[0].Handle, (int)topWindowProcessId));
+                        var topmost = new Models.AppsInterop.NativeWindow(nativeWindows[0].Handle, (int)topWindowProcessId);
+                        if (topmost.ClassName != "Shell_SecondaryTrayWnd") // Fix for system tray on second screen
+                        {
+                            processWindowsList.Add(topmost);
+                        }
                     }
 
                     // TODO: ? main process window - check if it has max size ? search by window class
@@ -495,61 +448,64 @@
                         .OrderBy(r => r.ZIndex)
                         .ToList();
 
-                    var topmostWindow = orderedProcessWindowsList.First().Window;
-
-                    var knownApp = KnownApp.Unknown;
-                    if (octaneRenderWindows.Any(w => w.Handle == topmostWindow.Handle))
+                    if (orderedProcessWindowsList.Count > 0)
                     {
-                        knownApp = KnownApp.OctaneRenderStandalone;
-                    }
-                    else if (paintNetWindows.Any(w => w.Handle == topmostWindow.Handle))
-                    {
-                        knownApp = KnownApp.PaintDotNet;
-                    }
-                    else if (irfanViewWindows.Any(w => w.Handle == topmostWindow.Handle))
-                    {
-                        knownApp = KnownApp.IrfanView;
-                    }
+                        var topmostWindow = orderedProcessWindowsList.First().Window;
 
-                    Debug.WriteLine($"Topmost process window: {topmostWindow}  App: {knownApp}");
-
-                    var selectedNativeWindow = new Models.AppsInterop.NativeWindow(topmostWindow.Handle, topmostWindow.ProcessId);
-                    var bitmap = selectedNativeWindow.GetShot();
-
-                    Task.Factory.StartNew(() =>
-                    {
-                        var flatImage = new Models.FlatImage(bitmap);
-
-                        Models.Geometry.Rectangle imageBounds;
-                        switch (knownApp)
+                        var knownApp = KnownApp.Unknown;
+                        if (octaneRenderWindows.Any(w => w.Handle == topmostWindow.Handle))
                         {
-                            case KnownApp.OctaneRenderStandalone:
-                                {
-                                    imageBounds = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
-                                    break;
-                                }
-                            default: // TODO: paint.net and IrfanView specific support
-                                {
-                                    imageBounds = flatImage.FindBoundsOfInnerImage();
-                                    break;
-                                }
+                            knownApp = KnownApp.OctaneRenderStandalone;
+                        }
+                        else if (paintNetWindows.Any(w => w.Handle == topmostWindow.Handle))
+                        {
+                            knownApp = KnownApp.PaintDotNet;
+                        }
+                        else if (irfanViewWindows.Any(w => w.Handle == topmostWindow.Handle))
+                        {
+                            knownApp = KnownApp.IrfanView;
                         }
 
-                        return new Models.GridTargetLocation
+                        Debug.WriteLine($"Topmost process window: {topmostWindow}  App: {knownApp}");
+
+                        var selectedNativeWindow = new Models.AppsInterop.NativeWindow(topmostWindow.Handle, topmostWindow.ProcessId);
+                        var bitmap = selectedNativeWindow.GetShot();
+
+                        Task.Factory.StartNew(() =>
                         {
-                            Offset = new Models.Geometry.Point(selectedNativeWindow.Location.X, selectedNativeWindow.Location.Y),
-                            ImageBounds = imageBounds,
-                        };
-                    })
-                    .ContinueWith((t) =>
-                    {
-                        if ((!t.Result.ImageBounds.IsEmpty) &&
-                            (t.Result.ImageBounds.Width > 150) &&
-                            (t.Result.ImageBounds.Height > 50))
+                            var flatImage = new Models.FlatImage(bitmap);
+
+                            Models.Geometry.Rectangle imageBounds;
+                            switch (knownApp)
+                            {
+                                case KnownApp.OctaneRenderStandalone:
+                                    {
+                                        imageBounds = Models.AppsInterop.OctaneRenderWindow.FindRenderedImageBorders(flatImage);
+                                        break;
+                                    }
+                                default: // TODO: paint.net and IrfanView specific support
+                                {
+                                        imageBounds = flatImage.FindBoundsOfInnerImage();
+                                        break;
+                                    }
+                            }
+
+                            return new Models.GridTargetLocation
+                            {
+                                Offset = new Models.Geometry.Point(selectedNativeWindow.Location.X, selectedNativeWindow.Location.Y),
+                                ImageBounds = imageBounds,
+                            };
+                        })
+                        .ContinueWith((t) =>
                         {
-                            this.SetWindowLocation(t.Result);
-                        }
-                    }, TaskScheduler.FromCurrentSynchronizationContext());
+                            if ((!t.Result.ImageBounds.IsEmpty) &&
+                                (t.Result.ImageBounds.Width > 150) &&
+                                (t.Result.ImageBounds.Height > 50))
+                            {
+                                this.SetWindowLocation(t.Result);
+                            }
+                        }, TaskScheduler.FromCurrentSynchronizationContext());
+                    }
                 }
             }
         }
@@ -596,8 +552,8 @@
 
             this.WindowLeft = location.ImageBounds.Left + location.Offset.X - diffX - BufferSize;
             this.WindowTop = location.ImageBounds.Top + location.Offset.Y - diffY - BufferSize;
-            this.WindowWidth = (location.ImageBounds.Right - location.ImageBounds.Left) + diffX + 2 * BufferSize;
-            this.WindowHeight = (location.ImageBounds.Bottom - location.ImageBounds.Top) + diffY + 2 * BufferSize;
+            this.WindowWidth = location.ImageBounds.Right - location.ImageBounds.Left + diffX + 2 * BufferSize;
+            this.WindowHeight = location.ImageBounds.Bottom - location.ImageBounds.Top + diffY + 2 * BufferSize;
         }
     }
 }

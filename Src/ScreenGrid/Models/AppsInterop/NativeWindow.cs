@@ -1,11 +1,11 @@
-﻿namespace ScreenGrid.Models.AppsInterop
-{
-    using System;
-    using System.Drawing;
-    using System.Linq;
-    using System.Text;
-    using System.Collections.Generic;
+﻿using System;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Collections.Generic;
 
+namespace ScreenGrid.Models.AppsInterop
+{
     /// <summary>
     /// Native window wrapper
     /// </summary>
@@ -21,37 +21,13 @@
             this.processId = processId;
         }
 
-        public IntPtr Handle
-        {
-            get
-            {
-                return this.hWnd;
-            }
-        }
+        public IntPtr Handle => this.hWnd;
 
-        public int ProcessId
-        {
-            get
-            {
-                return this.processId;
-            }
-        }
+        public int ProcessId => this.processId;
 
-        public bool IsMinimized
-        {
-            get
-            {
-                return WinApiInterop.NativeMethods.IsMinimized(this.hWnd);
-            }
-        }
+        public bool IsMinimized => WinApiInterop.NativeMethods.IsMinimized(this.hWnd);
 
-        public bool IsVisible
-        {
-            get
-            {
-                return WinApiInterop.NativeMethods.IsVisible(this.hWnd);
-            }
-        }
+        public bool IsVisible => WinApiInterop.NativeMethods.IsVisible(this.hWnd);
 
         public string ClassName
         {
@@ -59,18 +35,11 @@
             {
                 var lpClassName = new StringBuilder(1000);
                 WinApiInterop.NativeMethods.GetClassName(this.hWnd, lpClassName, 1000);
-
                 return lpClassName.ToString();
             }
         }
 
-        public string Title
-        {
-            get
-            {
-                return WinApiInterop.NativeMethods.GetWindowText(this.hWnd);
-            }
-        }
+        public string Title => WinApiInterop.NativeMethods.GetWindowText(this.hWnd);
 
         public Point Location
         {
@@ -109,10 +78,7 @@
             return WinApiInterop.NativeMethods.GetWindowImage(this.hWnd, 0, 0, (rect.Right - rect.Left) + 1, (rect.Bottom - rect.Top) + 1); // TODO: +1 ?
         }
 
-        public override string ToString()
-        {
-            return this.ClassName;
-        }
+        public override string ToString() => this.ClassName;
 
         #region Utility methods
 

@@ -1,8 +1,8 @@
-﻿namespace ScreenGrid.Models.AppsInterop
-{
-    using System;
-    using ScreenGrid.Models.Geometry;
+﻿using System;
+using ScreenGrid.Models.Geometry;
 
+namespace ScreenGrid.Models.AppsInterop
+{
     public class PhotoViewerWindow : NativeWindow
     {
         public const string MainWindowClassName = "Photo_Lightweight_Viewer";

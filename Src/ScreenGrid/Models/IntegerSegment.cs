@@ -1,10 +1,10 @@
-﻿namespace ScreenGrid.Models
-{
-    using System;
-    using System.Globalization;
+﻿using System;
+using System.Globalization;
 
+namespace ScreenGrid.Models
+{
     /// <summary>
-    /// Representation of segment
+    /// Representation of segment.
     /// </summary>
     public struct IntegerSegment
     {
@@ -30,37 +30,16 @@
             set { this.end = value; }
         }
 
-        public static IntegerSegment Zero
-        {
-            get
-            {
-                return new IntegerSegment(0, 0);
-            }
-        }
+        public static IntegerSegment Zero => new IntegerSegment(0, 0);
 
-        public override bool Equals(Object obj)
-        {
-            return ((obj is IntegerSegment) && (this == (IntegerSegment)obj));
-        }
+        public override bool Equals(Object obj) => (obj is IntegerSegment) && (this == (IntegerSegment)obj);
 
-        public override int GetHashCode()
-        {
-            return start.GetHashCode() ^ end.GetHashCode();
-        }
+        public override int GetHashCode() => start.GetHashCode() ^ end.GetHashCode();
 
-        public static bool operator ==(IntegerSegment x, IntegerSegment y)
-        {
-            return ((x.start == y.start) && (x.end == y.end));
-        }
+        public static bool operator ==(IntegerSegment x, IntegerSegment y) => (x.start == y.start) && (x.end == y.end);
 
-        public static bool operator !=(IntegerSegment x, IntegerSegment y)
-        {
-            return (!(x == y));
-        }
+        public static bool operator !=(IntegerSegment x, IntegerSegment y) => !(x == y);
 
-        public override string ToString()
-        {
-            return String.Format(CultureInfo.InvariantCulture, "[{0} {1}]", this.Start, this.End);
-        }
+        public override string ToString() => String.Format(CultureInfo.InvariantCulture, "[{0} {1}]", this.Start, this.End);
     }
 }

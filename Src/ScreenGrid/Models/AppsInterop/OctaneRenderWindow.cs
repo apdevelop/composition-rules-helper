@@ -1,11 +1,11 @@
-﻿namespace ScreenGrid.Models.AppsInterop
-{
-    using System;
-    using System.Drawing;
-    using System.Linq;
+﻿using System;
+using System.Drawing;
+using System.Linq;
 
+namespace ScreenGrid.Models.AppsInterop
+{
     /// <summary>
-    /// Native window wrapper of Octane Render
+    /// Native window wrapper of Octane Render Standalone.
     /// </summary>
     public class OctaneRenderWindow : NativeWindow
     {
@@ -23,48 +23,18 @@
                 .Where(p => String.Compare(p.ProcessName, ProcessName, StringComparison.OrdinalIgnoreCase) == 0)
                 .FirstOrDefault();
 
-            return (process != null) ? new OctaneRenderWindow(process.MainWindowHandle, process.Id) : null;
+            return process != null ? new OctaneRenderWindow(process.MainWindowHandle, process.Id) : null;
         }
 
-        private static Bitmap UpperLeftCorner1
-        {
-            get
-            {
-                return ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner1.png");
-            }
-        }
+        private static Bitmap UpperLeftCorner1 => ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner1.png");
 
-        private static Bitmap UpperLeftCorner2
-        {
-            get
-            {
-                return ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner2.png");
-            }
-        }
+        private static Bitmap UpperLeftCorner2 => ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner2.png");
 
-        private static Bitmap UpperLeftCorner3
-        {
-            get
-            {
-                return ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner3.png");
-            }
-        }
+        private static Bitmap UpperLeftCorner3 => ReadPngResouse("ScreenGrid.Models.Resources.UpperLeftCorner3.png");
 
-        private static Bitmap LowerRightCorner1
-        {
-            get
-            {
-                return ReadPngResouse("ScreenGrid.Models.Resources.LowerRightCorner1.png");
-            }
-        }
+        private static Bitmap LowerRightCorner1 => ReadPngResouse("ScreenGrid.Models.Resources.LowerRightCorner1.png");
 
-        private static Bitmap LowerRightCorner2
-        {
-            get
-            {
-                return ReadPngResouse("ScreenGrid.Models.Resources.LowerRightCorner2.png");
-            }
-        }
+        private static Bitmap LowerRightCorner2 => ReadPngResouse("ScreenGrid.Models.Resources.LowerRightCorner2.png");
 
         private static Bitmap ReadPngResouse(string resourceName)
         {

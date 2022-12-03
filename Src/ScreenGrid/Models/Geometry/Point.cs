@@ -1,8 +1,8 @@
-﻿namespace ScreenGrid.Models.Geometry
-{
-    using System;
-    using System.Globalization;
+﻿using System;
+using System.Globalization;
 
+namespace ScreenGrid.Models.Geometry
+{
     public struct Point
     {
         private double x;
@@ -27,17 +27,8 @@
             set { this.y = value; }
         }
 
-        public static Point Zero
-        {
-            get
-            {
-                return new Point(0.0, 0.0);
-            }
-        }
+        public static Point Zero => new Point(0.0, 0.0);
 
-        public override string ToString()
-        {
-            return String.Format(CultureInfo.InvariantCulture, "{0} {1}", this.X, this.Y);
-        }
+        public override string ToString() => String.Format(CultureInfo.InvariantCulture, "{0} {1}", this.X, this.Y);
     }
 }

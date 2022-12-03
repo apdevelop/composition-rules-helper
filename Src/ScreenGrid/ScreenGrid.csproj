@@ -70,7 +70,7 @@
     <Compile Include="Models\Geometry\Point.cs" />
     <Compile Include="Models\Geometry\Rectangle.cs" />
     <Compile Include="Models\Geometry\Utils.cs" />
-    <Compile Include="Models\Grids\GridCreator.cs" />
+    <Compile Include="Models\Grids\GridBuilder.cs" />
     <Compile Include="Models\Grids\GridModeItem.cs" />
     <Compile Include="Models\Grids\GridType.cs" />
     <Compile Include="Models\Grids\Orientation.cs" />

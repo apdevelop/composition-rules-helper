@@ -1,7 +1,7 @@
-﻿namespace ScreenGrid.Models.Grids
-{
-    using System;
+﻿using System;
 
+namespace ScreenGrid.Models.Grids
+{
     public static class Rotator
     {
         public static Rotation RotateCounterClockwise(Rotation rotation)
@@ -32,26 +32,11 @@
         {
             switch (r)
             {
-                case Rotation.R0:
-                    {
-                        return 0.0;
-                    }
-                case Rotation.R90:
-                    {
-                        return Math.PI / 2.0;
-                    };
-                case Rotation.R180:
-                    {
-                        return Math.PI;
-                    };
-                case Rotation.R270:
-                    {
-                        return 3.0 / 2.0 * Math.PI;
-                    };
-                default:
-                    {
-                        throw new ArgumentException(r.ToString());
-                    }
+                case Rotation.R0: return 0.0;
+                case Rotation.R90: return Math.PI / 2.0;
+                case Rotation.R180: return Math.PI;
+                case Rotation.R270: return 3.0 / 2.0 * Math.PI;
+                default: throw new ArgumentException(r.ToString());
             }
         }
     }

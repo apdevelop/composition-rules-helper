@@ -1,10 +1,9 @@
-﻿namespace ScreenGrid.ViewModels.Utils
-{
-    using System;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Globalization;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 
+namespace ScreenGrid.ViewModels.Utils
+{
     // https://joshsmithonwpf.wordpress.com/2007/08/29/a-base-class-which-implements-inotifypropertychanged/
     // http://stackoverflow.com/questions/9077106/inheriting-from-one-baseclass-that-implements-inotifypropertychanged
 
@@ -29,11 +28,9 @@
         [Conditional("DEBUG")]
         private void VerifyProperty(string propertyName)
         {
-            const string paramName = "propertyName";
-
             if (propertyName == null)
             {
-                throw new ArgumentNullException(paramName);
+                throw new ArgumentNullException(nameof(propertyName));
             }
 
             if (!String.IsNullOrEmpty(propertyName))
@@ -43,8 +40,7 @@
 
                 if (propInfo == null)
                 {
-                    var message = String.Format(CultureInfo.InvariantCulture, "Property '{0}' was not found in class '{1}'", propertyName, type.FullName);
-                    throw new ArgumentException(message, paramName);
+                    throw new ArgumentException($"Property '{propertyName}' was not found in class '{type.FullName}'.", nameof(propertyName));
                 }
             }
         }

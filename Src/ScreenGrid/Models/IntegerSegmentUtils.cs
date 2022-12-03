@@ -1,8 +1,8 @@
-﻿namespace ScreenGrid.Models
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace ScreenGrid.Models
+{
     /// <summary>
     /// Extended operations on IntegerSegment
     /// </summary>
@@ -61,7 +61,7 @@
 
         private static bool CheckSegmentLength(IntegerSegment segment, int minimalSegmentLength)
         {
-            return ((segment.End - segment.Start + 1) >= minimalSegmentLength);
+            return (segment.End - segment.Start + 1) >= minimalSegmentLength;
         }
 
         public static IntegerSegment IntersectionOfSegments(IntegerSegment segment1, IntegerSegment segment2)

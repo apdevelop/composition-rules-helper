@@ -1,7 +1,7 @@
-﻿namespace ScreenGrid.Models.Grids
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace ScreenGrid.Models.Grids
+{
     public class GridModeItem
     {
         private readonly GridType gridType;
@@ -20,37 +20,13 @@
             this.rotateEnabled = rotateEnabled;
         }
 
-        public GridType GridType
-        {
-            get
-            {
-                return this.gridType;
-            }
-        }
+        public GridType GridType => this.gridType;
 
-        public string Title
-        {
-            get
-            {
-                return this.title;
-            }
-        }
+        public string Title => this.title;
 
-        public bool IsFlipEnabled
-        {
-            get
-            {
-                return this.flipEnabled;
-            }
-        }
+        public bool IsFlipEnabled => this.flipEnabled;
 
-        public bool IsRotateEnabled
-        {
-            get
-            {
-                return this.rotateEnabled;
-            }
-        }
+        public bool IsRotateEnabled => this.rotateEnabled;
 
         public static IEnumerable<GridModeItem> List
         {

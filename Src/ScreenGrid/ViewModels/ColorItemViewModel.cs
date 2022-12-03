@@ -1,9 +1,9 @@
-﻿namespace ScreenGrid.ViewModels
-{
-    using System;
-    using System.Linq;
-    using System.Windows.Media;
+﻿using System;
+using System.Linq;
+using System.Windows.Media;
 
+namespace ScreenGrid.ViewModels
+{
     public class ColorItemViewModel
     {
         private Color color;
@@ -13,29 +13,11 @@
             this.color = color;
         }
 
-        public Color Color 
-        {
-            get
-            {
-                return this.color;
-            }
-        }
+        public Color Color => this.color;
 
-        public Brush Brush
-        { 
-            get
-            { 
-                return new SolidColorBrush(this.Color);
-            }
-        }
-        
-        public string Name
-        {
-            get
-            {
-                return GetColorName(this.Color);
-            }
-        }
+        public Brush Brush => new SolidColorBrush(this.Color);
+
+        public string Name => GetColorName(this.Color);
 
         private static string GetColorName(Color color)
         {
@@ -46,22 +28,13 @@
 
         public override bool Equals(Object obj)
         {
-            return ((obj is ColorItemViewModel) && (this == (ColorItemViewModel)obj));
+            return (obj is ColorItemViewModel) && (this == (ColorItemViewModel)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return this.color.GetHashCode();
-        }
+        public override int GetHashCode() => this.color.GetHashCode();
 
-        public static bool operator ==(ColorItemViewModel a, ColorItemViewModel b)
-        {
-            return (a.Color == b.Color);
-        }
+        public static bool operator ==(ColorItemViewModel a, ColorItemViewModel b) => a.Color == b.Color;
 
-        public static bool operator !=(ColorItemViewModel a, ColorItemViewModel b)
-        {
-            return (!(a == b));
-        }
+        public static bool operator !=(ColorItemViewModel a, ColorItemViewModel b) => !(a == b);
     }
 }

@@ -1,9 +1,9 @@
-﻿namespace ScreenGrid
-{
-    using System;
-    using System.Windows;
-    using System.Windows.Threading;
+﻿using System;
+using System.Windows;
+using System.Windows.Threading;
 
+namespace ScreenGrid
+{
     public partial class App : Application
     {
         public App()
@@ -28,8 +28,7 @@
 
         private void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            var ex = e.ExceptionObject as Exception;
-            if (ex != null)
+            if (e.ExceptionObject is Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }

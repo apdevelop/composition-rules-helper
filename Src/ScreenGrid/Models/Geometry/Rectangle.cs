@@ -1,7 +1,7 @@
-﻿namespace ScreenGrid.Models.Geometry
-{
-    using System;
+﻿using System;
 
+namespace ScreenGrid.Models.Geometry
+{
     public struct Rectangle
     {
         // TODO: process infinite values
@@ -27,53 +27,17 @@
             }
         }
 
-        public double Right
-        {
-            get
-            {
-                return this.X + this.Width;
-            }
-        }
+        public double Right => this.X + this.Width;
 
-        public double Top
-        {
-            get
-            {
-                return this.Y;
-            }
-        }
+        public double Top => this.Y;
 
-        public double Left
-        {
-            get
-            {
-                return this.X;
-            }
-        }
+        public double Left => this.X;
 
-        public double Bottom
-        {
-            get
-            {
-                return this.Y + this.Height;
-            }
-        }
+        public double Bottom => this.Y + this.Height;
 
-        public double CenterX
-        {
-            get
-            {
-                return this.X + this.Width / 2.0;
-            }
-        }
+        public double CenterX => this.X + this.Width / 2.0;
 
-        public double CenterY
-        {
-            get
-            {
-                return this.Y + this.Height / 2.0;
-            }
-        }
+        public double CenterY => this.Y + this.Height / 2.0;
 
         public bool IsEmpty
         {
@@ -82,8 +46,8 @@
                 return
                     this.X == Double.PositiveInfinity &&
                     this.Y == Double.PositiveInfinity &&
-                    this.Width == System.Double.NegativeInfinity &&
-                    this.Height == System.Double.NegativeInfinity;
+                    this.Width == Double.NegativeInfinity &&
+                    this.Height == Double.NegativeInfinity;
             }
         }
     }

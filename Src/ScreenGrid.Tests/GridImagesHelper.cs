@@ -29,7 +29,7 @@ namespace ScreenGrid.Tests
 
         private static void RenderGridImageAsPngFile(GridType gridType)
         {
-            var gridLines = GridCreator.CreateGrid(gridType, ImageWidth, ImageHeight, false);
+            var gridLines = GridBuilder.CreateGrid(gridType, ImageWidth, ImageHeight, false);
 
             var outputPath = Path.Combine(Path.GetTempPath(), "ScreenGrid");
             if (!Directory.Exists(outputPath))
@@ -82,7 +82,7 @@ namespace ScreenGrid.Tests
 
         private static string RenderGridImageAsXamlPath(GridType gridType)
         {
-            var gridLines = GridCreator.CreateGrid(gridType, ImageWidth, ImageHeight, false);
+            var gridLines = GridBuilder.CreateGrid(gridType, ImageWidth, ImageHeight, false);
 
             var result = new StringBuilder();
             foreach (var line in gridLines)

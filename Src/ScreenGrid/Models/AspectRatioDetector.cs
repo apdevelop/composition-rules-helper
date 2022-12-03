@@ -1,9 +1,9 @@
-﻿namespace ScreenGrid.Models
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
+namespace ScreenGrid.Models
+{
     public static class AspectRatioDetector
     {
         // TODO: add tests
